@@ -1,0 +1,14 @@
+<resources>
+    <dimen name="toolbar_padding_top">0dp</dimen>
+    <dimen name="toolbar_size">?attr/actionBarSize</dimen>
+    <dimen name="dialog_toolbar_size">45dp</dimen>
+    <dimen name="very_small_text">10sp</dimen>
+    <dimen name="small_text">12sp</dimen>
+    <dimen name="below_medium_text">14sp</dimen>
+    <dimen name="medium_text">16sp</dimen>
+    <dimen name="above_medium_text">18sp</dimen>
+    <dimen name="large_text">20sp</dimen>
+    <dimen name="huge_text">40sp</dimen>
+    <dimen name="drawer_width">200dp</dimen>
+    <dimen name="medium_progress_bar_size">35dp</dimen>
+</resources>

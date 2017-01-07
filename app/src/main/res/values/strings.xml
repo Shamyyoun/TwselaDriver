@@ -1,0 +1,36 @@
+<resources>
+    <!-- main strings -->
+    <string name="app_name">Twsela Driver</string>
+    <string name="google_geo_api_key">AIzaSyDl2B55haMJGm7M5spnRzHR5EG8FwR_qMk</string>
+
+
+    <!-- untranslated strings -->
+    <string name="empty_string"></string>
+
+
+    <!-- common strings -->
+    <string name="ok">Ok</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="unplug_mobile_cable_from_computer">Please unplug the mobile cable from the computer</string>
+    <string name="install_google_please_services">Please install google play service and try again</string>
+    <string name="search">Search</string>
+    <string name="search_dotted">Search...</string>
+    <string name="you_need_to_grant_required_permissions">You need to grant required permissions</string>
+    <string name="no_camera_app_found_in_this_device">No camera app installed on this device</string>
+    <string name="error_fetching_this_image">Error fetching this image</string>
+    <string name="something_went_wrong_please_try_again">Something went wrong, please try again</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="please_wait_dotted">Please wait...</string>
+    <string name="no_data_found">No data found</string>
+    <string name="failed_loading_data">Failed loading data</string>
+    <string name="tap_to_refresh">Tap to refresh</string>
+    <string name="connection_error">Connection error</string>
+
+
+    <!-- app strings -->
+    <string name="twsela">Twsela</string>
+
+
+    <!-- Arrays -->
+</resources>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="NormalImageView">
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="CroppedImageView">
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <style name="SingleEllipsizedText">
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="ScreenTitle">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="WhiteWidget">
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorPrimaryDark">@android:color/white</item>
+        <item name="colorAccent">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlActivated">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="android:textColorHighlight">@color/transparent_white</item>
+    </style>
+
+    <style name="GrayWidget">
+        <item name="colorPrimary">@android:color/darker_gray</item>
+        <item name="colorPrimaryDark">@android:color/darker_gray</item>
+        <item name="colorAccent">@android:color/darker_gray</item>
+        <item name="colorControlNormal">@android:color/darker_gray</item>
+        <item name="colorControlActivated">@android:color/darker_gray</item>
+        <item name="android:textColorHint">@android:color/darker_gray</item>
+        <item name="android:textColorHighlight">@color/light_gray</item>
+    </style>
+
+    <style name="WhiteEditText" parent="MyEditText">
+        <item name="android:theme">@style/WhiteWidget</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="backgroundTint">@android:color/white</item>
+    </style>
+
+    <style name="GrayEditText" parent="MyEditText">
+        <item name="android:theme">@style/GrayWidget</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="backgroundTint">@android:color/darker_gray</item>
+    </style>
+
+    <style name="WhiteButton" parent="MyButton">
+        <item name="android:background">@drawable/white_button_bg</item>
+        <item name="android:textColor">@color/green</item>
+    </style>
+
+    <style name="OrangeButton" parent="MyButton">
+        <item name="android:background">@drawable/orange_button_bg</item>
+    </style>
+
+    <style name="DialogOrangeButton" parent="OrangeButton">
+        <item name="android:minHeight">36dp</item>
+        <item name="android:minWidth">110dp</item>
+        <item name="android:textSize">@dimen/below_medium_text</item>
+    </style>
+
+    <style name="DialogStrokedOrangeButton" parent="StrokedOrangeButton">
+        <item name="android:minHeight">36dp</item>
+        <item name="android:minWidth">110dp</item>
+        <item name="android:textSize">@dimen/below_medium_text</item>
+    </style>
+
+    <style name="OrangeWidget">
+        <item name="colorPrimary">@color/orange</item>
+        <item name="colorPrimaryDark">@color/orange</item>
+        <item name="colorAccent">@color/orange</item>
+        <item name="colorControlNormal">@color/orange</item>
+        <item name="colorControlActivated">@color/orange</item>
+        <item name="android:textColorHighlight">@color/transparent_orange</item>
+    </style>
+
+    <style name="OrangeStrokedEditText" parent="MyEditText">
+        <item name="android:theme">@style/OrangeWidget</item>
+        <item name="android:background">@drawable/rounded_corners_orange_stroked_edittext_bg</item>
+        <item name="backgroundTint">@null</item>
+    </style>
+
+    <style name="MyCardView">
+        <item name="cardCornerRadius">5dp</item>
+        <item name="cardElevation">1dp</item>
+        <item name="android:layout_marginLeft">7dp</item>
+        <item name="android:layout_marginRight">7dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="OrangeSectionHeadTextView">
+        <item name="android:textColor">@color/orange</item>
+        <item name="android:textSize">@dimen/above_medium_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="StrokedOrangeButton" parent="MyButton">
+        <item name="android:background">@drawable/stroked_orange_button</item>
+        <item name="android:textColor">@color/orange</item>
+    </style>
+
+    <style name="SmallOrangeButton" parent="OrangeButton">
+        <item name="android:minHeight">28dp</item>
+    </style>
+
+    <style name="SmallBorderlessButton" parent="MyButton">
+        <item name="android:minHeight">32dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:textSize">@dimen/small_text</item>
+    </style>
+
+    <style name="ETButton" parent="MyButton">
+        <item name="android:background">?attr/editTextBackground</item>
+        <item name="android:gravity">right</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:drawablePadding">5dp</item>
+    </style>
+
+    <style name="WhiteETButton" parent="ETButton">
+        <item name="backgroundTint">@android:color/white</item>
+        <item name="android:drawableLeft">@drawable/white_et_button_arrow</item>
+    </style>
+
+    <style name="OrangeETButton" parent="ETButton">
+        <item name="backgroundTint">@color/gray_orange_edittext_bg</item>
+        <item name="android:drawableLeft">@drawable/orange_et_button_arrow</item>
+        <item name="android:textColor">@color/dark_gray</item>
+    </style>
+
+</resources>
