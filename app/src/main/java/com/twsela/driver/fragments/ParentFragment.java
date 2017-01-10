@@ -144,4 +144,8 @@ public class ParentFragment extends Fragment implements View.OnClickListener, Co
             Utils.hideKeyboard(rootView);
         }
     }
+
+    public boolean hasInternetConnection() {
+        return Utils.hasConnection(activity);
+    }
 }

@@ -211,4 +211,8 @@ public class ParentActivity extends AppCompatActivity implements View.OnClickLis
     public boolean hasToolbar() {
         return toolbar != null;
     }
+
+    public boolean hasInternetConnection() {
+        return Utils.hasConnection(this);
+    }
 }

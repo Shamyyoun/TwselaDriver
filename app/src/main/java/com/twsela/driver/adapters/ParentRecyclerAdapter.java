@@ -99,4 +99,8 @@ public abstract class ParentRecyclerAdapter<Item> extends RecyclerView.Adapter<P
             itemRemovedListener.onItemRemoved(position);
         }
     }
+
+    public boolean hasInternetConnection() {
+        return Utils.hasConnection(context);
+    }
 }

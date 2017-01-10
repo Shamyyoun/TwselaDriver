@@ -32,6 +32,27 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_geo_api_key" />
 
+        <!-- ===================== FCM ===================== -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_launcher" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/orange" />
+
+        <service android:name=".fcm.FCMHandlerService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".fcm.FCMRegistrationService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
         <!-- ===================== Fabric ===================== -->
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -43,12 +64,17 @@
             android:theme="@style/CropActivityTheme" />
 
         <!-- ======================= Activities ======================= -->
-        <activity android:name=".activities.MainActivity">
+        <activity
+            android:name=".activities.LoginActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".activities.MainActivity" />
     </application>
 </manifest>

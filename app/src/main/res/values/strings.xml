@@ -26,10 +26,16 @@
     <string name="failed_loading_data">Failed loading data</string>
     <string name="tap_to_refresh">Tap to refresh</string>
     <string name="connection_error">Connection error</string>
+    <string name="please_fill_all_fields">Please fill all fields</string>
 
 
     <!-- app strings -->
     <string name="twsela">Twsela</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="login_here">Login here</string>
+    <string name="make_sure_of_username_and_password">Make sure you entered a valid username and password</string>
 
 
     <!-- Arrays -->

@@ -149,4 +149,8 @@ public class ParentDialog extends Dialog implements View.OnClickListener, Connec
         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         getWindow().setAttributes(layoutParams);
     }
+
+    public boolean hasInternetConnection() {
+        return Utils.hasConnection(context);
+    }
 }
