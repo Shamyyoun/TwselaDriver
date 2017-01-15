@@ -3,8 +3,10 @@ package com.twsela.driver.activities;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.twsela.driver.Const;
 import com.twsela.driver.R;
 import com.twsela.driver.controllers.ActiveUserController;
+import com.twsela.driver.models.entities.Trip;
 import com.twsela.driver.utils.PlayServicesUtils;
 import com.twsela.driver.utils.Utils;
 
@@ -33,16 +35,16 @@ public class SplashActivity extends ParentActivity {
             Intent mainIntent = new Intent(this, MainActivity.class);
             startActivity(mainIntent);
 
-//            // check active trip TODO
-//            Trip activeTrip = activeUserController.getActiveTrip();
-//            if (activeTrip != null) {
-//                // open trip details activity
-//                Intent tripIntent = new Intent(this, TripDetailsActivity.class);
-//                tripIntent.putExtra(Const.KEY_ID, activeTrip.getId());
-//                tripIntent.putExtra(Const.KEY_STATUS, activeTrip.getStatus());
-//
-//                startActivity(tripIntent);
-//            }
+            // check active trip
+            Trip activeTrip = activeUserController.getActiveTrip();
+            if (activeTrip != null) {
+                // open trip activity
+                Intent tripIntent = new Intent(this, TripActivity.class);
+                tripIntent.putExtra(Const.KEY_ID, activeTrip.getId());
+                tripIntent.putExtra(Const.KEY_STATUS, activeTrip.getStatus());
+
+                startActivity(tripIntent);
+            }
 
         } else {
             // open login activity

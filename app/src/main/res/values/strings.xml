@@ -46,6 +46,39 @@
     <string name="go_offline">Go Offline</string>
     <string name="failed_changing_your_status">Failed changing your status</string>
     <string name="you_are_online">You are online</string>
+    <string name="passenger_c">Passenger:</string>
+    <string name="pickup_c">Pickup:</string>
+    <string name="destination_c">Destination:</string>
+    <string name="accept">Accept</string>
+    <string name="ignore">Ignore</string>
+    <string name="point_on_map">Point on map</string>
+    <string name="failed_loading_details">Failed loading details</string>
+    <string name="not_available">Not available</string>
+    <string name="failed_accepting_request">Failed accepting request</string>
+    <string name="your_driver_c">Your Driver:</string>
+    <string name="trip_status_c">Trip Status:</string>
+    <string name="in_your_way_to_pickup">In your way to pickup</string>
+    <string name="your_driver_in_his_way_to_pickup">Your Driver in his way to pickup</string>
+    <string name="you_have_arrived_to_pickup">You have arrived to pickup</string>
+    <string name="your_driver_has_arrived_to_pickup">Your driver has arrived to pickup</string>
+    <string name="enjoy_your_trip">Enjoy your trip</string>
+    <string name="your_trip_has_started">Your trip has started</string>
+    <string name="you_have_arrived">You have arrived</string>
+    <string name="thanks_for_using_twsela">Thanks for using Twsela :)</string>
+    <string name="in_your_way_to_destination">In your way to destination</string>
+    <string name="your_trip">Your Trip</string>
+    <string name="arrived">Arrived</string>
+    <string name="cancel_trip">Cancel Trip</string>
+    <string name="failed_cancelling_trip">Failed cancelling trip</string>
+    <string name="trip_cancelled_successfully">Trip cancelled successfully</string>
+    <string name="start_trip">Start Trip</string>
+    <string name="end_trip">End Trip</string>
+    <string name="failed_arriving">Failed arriving</string>
+    <string name="arrived_successfully">Arrived successfully</string>
+    <string name="failed_starting_trip">Failed starting trip</string>
+    <string name="trip_started_successfully">Trip started successfully</string>
+    <string name="failed_ending_trip">Failed ending trip</string>
+    <string name="trip_ended_successfully">Trip ended successfully</string>
 
 
     <!-- Arrays -->

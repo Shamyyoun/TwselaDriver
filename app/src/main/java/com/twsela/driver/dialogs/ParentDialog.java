@@ -153,4 +153,8 @@ public class ParentDialog extends Dialog implements View.OnClickListener, Connec
     public boolean hasInternetConnection() {
         return Utils.hasConnection(context);
     }
+
+    public void printStackTrace(Exception e) {
+        if (e != null && Utils.DEBUGGABLE) e.printStackTrace();
+    }
 }

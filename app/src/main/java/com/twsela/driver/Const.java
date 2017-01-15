@@ -13,6 +13,7 @@ public class Const {
     public static final int DEFAULT_ITEM_ID = -1; // this is used to add a default item in lists used in adapter
     public static final int INITIAL_ZOOM_LEVEL = 15;
     public static final int LOCATION_REFRESH_RATE = 3000; // in milliseconds
+    public static final int MAP_REFRESH_RATE = 3000; // in milliseconds
 
     // Server Constants:--------------------
     public static final int SER_CODE_200 = 200;
@@ -24,16 +25,25 @@ public class Const {
 
     // API Routes:---------------------------
     public static final String ROUTE_DRIVER = "driver";
+    public static final String ROUTE_TRIP = "trip";
     public static final String ROUTE_LOGIN = "login";
     public static final String ROUTE_UPDATE_STATUS = "updateStatus";
     public static final String ROUTE_UPDATE_LOCATION = "updateLocation";
+    public static final String ROUTE_GET_DETAILS_BY_ID = "getDetailsById";
+    public static final String ROUTE_ACCEPT_TRIP = "acceptTrip";
+    public static final String ROUTE_CANCEL_TRIP = "cancelTrip";
+    public static final String ROUTE_ARRIVED = "arrived";
+    public static final String ROUTE_START_TRIP = "startTrip";
+    public static final String ROUTE_END_TRIP = "endTrip";
 
     // API Params:---------------------------
     public static final String PARAM_USERNAME = "username";
     public static final String PARAM_PASSWORD = "password";
     public static final String PARAM_GCM = "gcm";
-    public static final String PARAM__ID = "_id";
-    public static final String PARAM_IS_ONLINE = "is_online";
+    public static final String PARAM_ID = "id";
+    public static final String PARAM_DRIVER_ID = "driver_id";
+    public static final String PARAM_CAR_ID = "car_id";
+    public static final String PARAM_TRIP_ID = "trip_id";
 
     // SharePrefs Keys:---------------------
     public static final String SP_USER = "user";
@@ -42,12 +52,10 @@ public class Const {
     public static final int REQ_ENABLE_GPS = 1;
 
     // Keys:--------------------------------
-    public static final String KEY_OPERATION = "operation";
+    public static final String KEY_ID = "id";
+    public static final String KEY_STATUS = "status";
 
     // Notification IDs:-------------------
     public static final int NOTI_UPDATE_LOCATION_SERVICES = 1;
-
-    // Others:------------------------------
-    public static final int START_SERVICE = 1;
-    public static final int END_SERVICE = 2;
+    public static final int NOTI_TRIP_CHANGED = 2;
 }

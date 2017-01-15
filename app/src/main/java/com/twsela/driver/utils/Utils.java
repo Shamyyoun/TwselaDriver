@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -740,5 +741,46 @@ public class Utils {
         }
 
         return arr;
+    }
+
+    /**
+     * method, used to get resource uri
+     * @param context
+     * @param resId
+     * @return
+     */
+    public static Uri getResourceUri(Context context, int resId) {
+        return Uri.parse("android.resource://" + context.getPackageName() + "/" + resId);
+    }
+
+    /**
+     * method, used to play sound from raw folder
+     * @param context
+     * @param soundRawResId
+     */
+    public static void playSound(Context context, int soundRawResId) {
+        final MediaPlayer mediaPlayer = MediaPlayer.create(context, soundRawResId);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mediaPlayer.release();
+            }
+        });
+        mediaPlayer.start();
+    }
+
+    /**
+     * method, used to convert string number to float number
+     *
+     * @param number
+     * @return
+     */
+    public static float convertToFloat(String number) {
+        try {
+            return Float.parseFloat(number);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 }

@@ -215,4 +215,8 @@ public class ParentActivity extends AppCompatActivity implements View.OnClickLis
     public boolean hasInternetConnection() {
         return Utils.hasConnection(this);
     }
+
+    public void printStackTrace(Exception e) {
+        if (e != null && Utils.DEBUGGABLE) e.printStackTrace();
+    }
 }

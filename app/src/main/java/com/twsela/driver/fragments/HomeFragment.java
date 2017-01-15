@@ -25,7 +25,7 @@ import com.twsela.driver.Const;
 import com.twsela.driver.R;
 import com.twsela.driver.connection.ConnectionHandler;
 import com.twsela.driver.controllers.ActiveUserController;
-import com.twsela.driver.models.entities.User;
+import com.twsela.driver.models.entities.Driver;
 import com.twsela.driver.models.responses.ServerResponse;
 import com.twsela.driver.services.UpdateLocationService;
 import com.twsela.driver.utils.AppUtils;
@@ -102,7 +102,7 @@ public class HomeFragment extends ParentFragment implements OnMapReadyCallback, 
     }
 
     private void updateStatusUI() {
-        User user = activeUserController.getUser();
+        Driver user = activeUserController.getUser();
         if (user.isOnline()) {
             btnChangeStatus.setText(R.string.go_offline);
             btnChangeStatus.setBackgroundResource(R.drawable.gray_rect_button_bg);
@@ -232,7 +232,7 @@ public class HomeFragment extends ParentFragment implements OnMapReadyCallback, 
 
     private void changeStatus() {
         // get user
-        User user = activeUserController.getUser();
+        Driver user = activeUserController.getUser();
 
         // send the request
         ConnectionHandler connectionHandler = ApiRequests.updateStatus(activity, this, user.getId(), !user.isOnline());
@@ -247,7 +247,7 @@ public class HomeFragment extends ParentFragment implements OnMapReadyCallback, 
         ServerResponse serverResponse = (ServerResponse) response;
         if (serverResponse.isSuccess()) {
             // update the status
-            User user = activeUserController.getUser();
+            Driver user = activeUserController.getUser();
             user.setOnline(!user.isOnline());
             activeUserController.save();
             updateStatusUI();

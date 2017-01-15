@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/view_toolbar" />
+
+    <fragment
+        android:id="@+id/map_fragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:padding="15dp">
+
+        <TableRow android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="@string/trip_status_c"
+                android:textColor="@color/orange"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_trip_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="----------------" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="@string/passenger_c"
+                android:textColor="@color/orange"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_passenger_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="----------------" />
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/gray_rect_button_bg"
+            android:text="@string/cancel_trip" />
+
+        <Button
+            android:id="@+id/btn_main_action"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/orange_rect_button_bg"
+            android:text="@string/arrived" />
+    </LinearLayout>
+</LinearLayout>

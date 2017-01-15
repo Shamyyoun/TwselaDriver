@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/orange"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:overScrollMode="ifContentScrolls"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                style="@style/NormalImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:src="@drawable/large_logo" />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:padding="10dp">
+
+                <TableRow android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TripRequestTitleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="12dp"
+                        android:text="@string/passenger_c" />
+
+                    <TextView
+                        android:id="@+id/tv_passenger_name"
+                        style="@style/TripRequestText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="---------------" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TripRequestTitleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="12dp"
+                        android:text="@string/pickup_c" />
+
+                    <TextView
+                        android:id="@+id/tv_pickup_address"
+                        style="@style/TripRequestText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="---------------" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TripRequestTitleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="12dp"
+                        android:text="@string/destination_c" />
+
+                    <TextView
+                        android:id="@+id/tv_destination_address"
+                        style="@style/TripRequestText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="---------------" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.twsela.driver.views.DarkenedButton
+            android:id="@+id/btn_ignore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/gray_rect_button_bg"
+            android:minHeight="50dp"
+            android:text="@string/ignore" />
+
+        <com.twsela.driver.views.DarkenedButton
+            android:id="@+id/btn_accept"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/green_rect_button_bg"
+            android:minHeight="50dp"
+            android:text="@string/accept" />
+    </LinearLayout>
+</LinearLayout>

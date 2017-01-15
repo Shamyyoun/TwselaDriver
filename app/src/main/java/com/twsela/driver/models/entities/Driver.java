@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class User {
+public class Driver {
 
     @SerializedName("_id")
     @Expose
@@ -31,6 +31,9 @@ public class User {
     @SerializedName("gcm")
     @Expose
     private String gcm;
+    @SerializedName("active_trip")
+    @Expose
+    private Trip activeTrip;
 
     public String getId() {
         return id;
@@ -94,6 +97,14 @@ public class User {
 
     public void setGcm(String gcm) {
         this.gcm = gcm;
+    }
+
+    public Trip getActiveTrip() {
+        return activeTrip;
+    }
+
+    public void setActiveTrip(Trip activeTrip) {
+        this.activeTrip = activeTrip;
     }
 
 }

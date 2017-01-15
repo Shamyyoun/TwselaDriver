@@ -75,6 +75,7 @@ public class LoginActivity extends ParentActivity {
 
         // check internet connection
         if (hasInternetConnection()) {
+            showProgressDialog();
             login(username, password);
         } else {
             Utils.showShortToast(this, R.string.no_internet_connection);
@@ -82,9 +83,6 @@ public class LoginActivity extends ParentActivity {
     }
 
     private void login(String username, String password) {
-        // show progress
-        showProgressDialog();
-
         // get firebase token
         String firebaseToken = FirebaseUtils.getFirebaseToken();
 

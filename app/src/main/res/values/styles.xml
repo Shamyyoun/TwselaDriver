@@ -144,4 +144,15 @@
         <item name="android:textColor">@color/dark_gray</item>
     </style>
 
+    <style name="TripRequestText">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/medium_text</item>
+        <item name="android:gravity">left</item>
+        <item name="android:layout_gravity">left</item>
+    </style>
+
+    <style name="TripRequestTitleText" parent="TripRequestText">
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
