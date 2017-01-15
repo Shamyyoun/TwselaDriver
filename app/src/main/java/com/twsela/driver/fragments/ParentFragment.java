@@ -26,6 +26,7 @@ public class ParentFragment extends Fragment implements View.OnClickListener, Co
     protected ParentActivity activity;
     protected View rootView;
     protected ProgressDialog progressDialog;
+    protected ParentFragment fragment;
 
     @Override
     public void onAttach(Activity activity) {
@@ -39,6 +40,7 @@ public class ParentFragment extends Fragment implements View.OnClickListener, Co
         if (activity.hasToolbar()) {
             setHasOptionsMenu(true);
         }
+        fragment = this;
     }
 
     public View findViewById(int id) {
@@ -147,5 +149,9 @@ public class ParentFragment extends Fragment implements View.OnClickListener, Co
 
     public boolean hasInternetConnection() {
         return Utils.hasConnection(activity);
+    }
+
+    public void printStackTrace(Exception e) {
+        if (e != null && Utils.DEBUGGABLE) e.printStackTrace();
     }
 }

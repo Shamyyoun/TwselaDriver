@@ -76,30 +76,67 @@ public class DialogUtils {
     }
 
     /**
+     * method, used to show confirm dialog with passed message and buttons text res ids
+     *
+     * @param context
+     * @param messageResId
+     * @param positiveClickListener
+     */
+    public static AlertDialog showConfirmDialog(Context context, int messageResId,
+                                                DialogInterface.OnClickListener positiveClickListener, int positiveButtonTextResId,
+                                                DialogInterface.OnClickListener negativeClickListener, int negativeButtonTextResId) {
+
+        return showConfirmDialog(context, context.getString(messageResId), positiveClickListener,
+                context.getString(positiveButtonTextResId), negativeClickListener, context.getString(negativeButtonTextResId));
+    }
+
+    /**
      * method, used to show confirm dialog with passed message string
      *
      * @param context
      * @param message
      * @param positiveClickListener
      */
-    public static AlertDialog showConfirmDialog(Context context, String message, DialogInterface.OnClickListener positiveClickListener,
+    public static AlertDialog showConfirmDialog(Context context, String message,
+                                                DialogInterface.OnClickListener positiveClickListener,
                                                 DialogInterface.OnClickListener negativeClickListener) {
+        return showConfirmDialog(context, message, positiveClickListener, null, negativeClickListener, null);
+    }
+
+    /**
+     * method, used to show confirm dialog with passed message string
+     *
+     * @param context
+     * @param message
+     * @param positiveClickListener
+     */
+    public static AlertDialog showConfirmDialog(Context context, String message,
+                                                DialogInterface.OnClickListener positiveClickListener, String positiveButtonText,
+                                                DialogInterface.OnClickListener negativeClickListener, String negativeButtonText) {
         // create the dialog builder & set message
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setMessage(message);
 
+        // prepare positive & negative buttons texts
+        if (positiveButtonText == null) {
+            positiveButtonText = context.getString(R.string.yes);
+        }
+        if (negativeButtonText == null) {
+            negativeButtonText = context.getString(R.string.no);
+        }
+
         // add positive click listener
-        dialogBuilder.setPositiveButton(context.getString(R.string.yes), positiveClickListener);
+        dialogBuilder.setPositiveButton(positiveButtonText, positiveClickListener);
 
         // check negative click listener
         if (negativeClickListener != null) {
             // not null
             // add negative click listener
-            dialogBuilder.setNegativeButton(context.getString(R.string.no), negativeClickListener);
+            dialogBuilder.setNegativeButton(negativeButtonText, negativeClickListener);
         } else {
             // null
             // add new click listener to dismiss the dialog
-            dialogBuilder.setNegativeButton(context.getString(R.string.no), new DialogInterface.OnClickListener() {
+            dialogBuilder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();

@@ -63,10 +63,13 @@
             android:name="com.soundcloud.android.crop.CropImageActivity"
             android:theme="@style/CropActivityTheme" />
 
+        <!-- ======================= Services ======================= -->
+        <service
+            android:name=".services.UpdateLocationService"
+            android:exported="false" />
+
         <!-- ======================= Activities ======================= -->
-        <activity
-            android:name=".activities.LoginActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
+        <activity android:name=".activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -75,6 +78,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.MainActivity" />
+        <activity
+            android:name=".activities.LoginActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+
+        <activity
+            android:name=".activities.MainActivity"
+            android:label="@string/twsela" />
     </application>
 </manifest>

@@ -13,7 +13,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="unplug_mobile_cable_from_computer">Please unplug the mobile cable from the computer</string>
-    <string name="install_google_please_services">Please install google play service and try again</string>
+    <string name="install_google_play_services">Please install Google Play Services</string>
     <string name="search">Search</string>
     <string name="search_dotted">Search...</string>
     <string name="you_need_to_grant_required_permissions">You need to grant required permissions</string>
@@ -27,6 +27,7 @@
     <string name="tap_to_refresh">Tap to refresh</string>
     <string name="connection_error">Connection error</string>
     <string name="please_fill_all_fields">Please fill all fields</string>
+    <string name="close">Close</string>
 
 
     <!-- app strings -->
@@ -36,6 +37,15 @@
     <string name="username">Username</string>
     <string name="login_here">Login here</string>
     <string name="make_sure_of_username_and_password">Make sure you entered a valid username and password</string>
+    <string name="go_online">Go Online</string>
+    <string name="enable_internet_connection_to_use_app">Please enable internet connection to use the app</string>
+    <string name="location_perm_refuse_msg">Sorry, you can\'t use the app without location permission</string>
+    <string name="enable_gps_to_use_app">Please enable GPS to use the app</string>
+    <string name="settings">Settings</string>
+    <string name="gps_refuse_msg">Sorry, you can\'t use the app without GPS</string>
+    <string name="go_offline">Go Offline</string>
+    <string name="failed_changing_your_status">Failed changing your status</string>
+    <string name="you_are_online">You are online</string>
 
 
     <!-- Arrays -->

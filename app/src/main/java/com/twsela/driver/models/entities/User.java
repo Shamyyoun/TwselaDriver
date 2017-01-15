@@ -1,4 +1,3 @@
-
 package com.twsela.driver.models.entities;
 
 import com.google.gson.annotations.Expose;
@@ -13,7 +12,7 @@ public class User {
     private String id;
     @SerializedName("location")
     @Expose
-    private Location location;
+    private MongoLocation location;
     @SerializedName("user_name")
     @Expose
     private String userName;
@@ -23,9 +22,9 @@ public class User {
     @SerializedName("bearing")
     @Expose
     private String bearing;
-    @SerializedName("is_active")
+    @SerializedName("is_online")
     @Expose
-    private boolean isActive;
+    private boolean isOnline;
     @SerializedName("car_id")
     @Expose
     private List<String> carId = null;
@@ -41,11 +40,11 @@ public class User {
         this.id = id;
     }
 
-    public Location getLocation() {
+    public MongoLocation getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(MongoLocation location) {
         this.location = location;
     }
 
@@ -73,12 +72,12 @@ public class User {
         this.bearing = bearing;
     }
 
-    public boolean isIsActive() {
-        return isActive;
+    public boolean isOnline() {
+        return isOnline;
     }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setOnline(boolean isOnline) {
+        this.isOnline = isOnline;
     }
 
     public List<String> getCarId() {

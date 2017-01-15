@@ -49,18 +49,6 @@ public class LoginActivity extends ParentActivity {
                 return false;
             }
         });
-
-        // check if ha logged in user
-        if (activeUserController.hasLoggedInUser()) {
-            openMainActivity();
-        }
-
-    }
-
-    private void openMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 
     @Override
@@ -121,5 +109,11 @@ public class LoginActivity extends ParentActivity {
             String msg = AppUtils.getResponseMsg(this, loginResponse, R.string.make_sure_of_username_and_password);
             Utils.showShortToast(this, msg);
         }
+    }
+
+    private void openMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }
