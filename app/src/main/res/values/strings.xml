@@ -81,6 +81,7 @@
     <string name="trip_ended_successfully">Trip ended successfully</string>
     <string name="logout">Logout</string>
     <string name="logout_q">Logout?</string>
+    <string name="you_cant_logout_when_you_are_online">You can\'t logout when you are online</string>
 
 
     <!-- Arrays -->

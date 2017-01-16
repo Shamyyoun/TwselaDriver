@@ -10,12 +10,13 @@ import android.view.MenuItem;
 import com.twsela.driver.R;
 import com.twsela.driver.controllers.ActiveUserController;
 import com.twsela.driver.fragments.HomeFragment;
-import com.twsela.driver.services.UpdateLocationService;
 import com.twsela.driver.utils.DialogUtils;
+import com.twsela.driver.utils.Utils;
 
 public class MainActivity extends ParentActivity {
     private static int DRAWER_GRAVITY = Gravity.LEFT;
 
+    private ActiveUserController activeUserController;
     private DrawerLayout drawerLayout;
     private HomeFragment homeFragment;
 
@@ -27,6 +28,9 @@ public class MainActivity extends ParentActivity {
         // customize toolbar
         setToolbarIcon(R.drawable.menu_icon);
         createOptionsMenu(R.menu.menu_main);
+
+        // create active user controller
+        activeUserController = new ActiveUserController(this);
 
         // init drawer layout
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -80,6 +84,13 @@ public class MainActivity extends ParentActivity {
     }
 
     private void onLogout() {
+        // check if he is online
+        if (activeUserController.getUser().isOnline()) {
+            // show msg and return
+            Utils.showLongToast(this, R.string.you_cant_logout_when_you_are_online);
+            return;
+        }
+
         // show confirm dialog
         DialogUtils.showConfirmDialog(this, R.string.logout_q, new DialogInterface.OnClickListener() {
             @Override
@@ -91,12 +102,8 @@ public class MainActivity extends ParentActivity {
 
     private void logout() {
         // logout in active user controller
-        ActiveUserController activeUserController = new ActiveUserController(this);
+        activeUserController = new ActiveUserController(this);
         activeUserController.logout();
-
-        // stop update location service
-        Intent updateLocationIntent = new Intent(this, UpdateLocationService.class);
-        stopService(updateLocationIntent);
 
         // goto splash activity
         Intent splashIntent = new Intent(this, SplashActivity.class);
