@@ -318,7 +318,7 @@ public class ConnectionHandler<T> {
                     listener.onFail(e, statusCode, tag);
                 }
         } else if (result.getResult() != null) {
-            Log.e(LOG_TAG, "Response(" + statusCode + "): " + result.getResult());
+            logE("Response(" + statusCode + "): " + result.getResult());
 
             if (cls == null && listener != null) { //T must be of type: Object or String
                 listener.onSuccess((T) result.getResult(), statusCode, tag);
@@ -400,5 +400,29 @@ public class ConnectionHandler<T> {
      */
     public void setBody(Object body) {
         this.body = body;
+    }
+
+    /**
+     * method, used to log messages
+     *
+     * @param message
+     */
+    private void logE(String message) {
+        if (!Utils.DEBUGGABLE) {
+            return;
+        }
+
+        if (Utils.isNullOrEmpty(message)) {
+            Log.e(LOG_TAG, "" + message);
+            return;
+        }
+
+        int maxLogSize = 1000;
+        for (int i = 0; i <= message.length() / maxLogSize; i++) {
+            int start = i * maxLogSize;
+            int end = (i + 1) * maxLogSize;
+            end = end > message.length() ? message.length() : end;
+            Log.e(LOG_TAG, message.substring(start, end));
+        }
     }
 }

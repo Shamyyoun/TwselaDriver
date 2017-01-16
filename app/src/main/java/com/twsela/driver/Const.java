@@ -62,4 +62,5 @@ public class Const {
 
     // Others:-----------------------------
     public static final String TAG_DISTANCE_MATRIX = "distancematrix";
+    public static final String TAG_DIRECTIONS = "directions";
 }

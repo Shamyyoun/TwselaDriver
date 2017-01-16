@@ -179,7 +179,7 @@ public class TripDetailsActivity extends ParentActivity {
         double originLng = locationController.getLongitude(trip.getPickupLocation());
         double destLat = locationController.getLatitude(trip.getActualDestinationLocation());
         double destLng = locationController.getLongitude(trip.getActualDestinationLocation());
-        String distanceApiKey = getString(R.string.distance_matrix_api_key);
+        String distanceApiKey = getString(R.string.google_api_server_key);
         String language = TwselaApp.getLanguage(this);
 
         // send the request

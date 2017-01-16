@@ -1,6 +1,7 @@
 package com.twsela.driver.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,22 +21,29 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.twsela.driver.ApiRequests;
 import com.twsela.driver.Const;
 import com.twsela.driver.R;
+import com.twsela.driver.TwselaApp;
 import com.twsela.driver.connection.ConnectionHandler;
 import com.twsela.driver.controllers.ActiveUserController;
+import com.twsela.driver.controllers.DirectionsController;
 import com.twsela.driver.controllers.LocationController;
 import com.twsela.driver.controllers.TripController;
 import com.twsela.driver.models.entities.MongoLocation;
 import com.twsela.driver.models.entities.Trip;
 import com.twsela.driver.models.enums.TripStatus;
+import com.twsela.driver.models.responses.DirectionsResponse;
 import com.twsela.driver.models.responses.ServerResponse;
 import com.twsela.driver.models.responses.TripResponse;
 import com.twsela.driver.utils.AppUtils;
 import com.twsela.driver.utils.LocationUtils;
 import com.twsela.driver.utils.MarkerUtils;
 import com.twsela.driver.utils.Utils;
+
+import java.util.List;
 
 public class TripActivity extends ParentActivity implements OnMapReadyCallback, Runnable {
     private static final int MAP_PADDING = 300;
@@ -48,6 +56,7 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     private TripController tripController;
     private LocationController locationController;
     private ActiveUserController activeUserController;
+    private DirectionsController directionsController;
 
     private SupportMapFragment mapFragment;
     private GoogleMap map;
@@ -63,6 +72,7 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     private Handler tripDetailsHandler;
     private Marker[] markers;
     private boolean firstTripDetailsReq = true;
+    private Polyline pathPolyline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +85,7 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
         tripController = new TripController();
         locationController = new LocationController();
         activeUserController = new ActiveUserController(this);
+        directionsController = new DirectionsController();
         markers = new Marker[3];
 
         // init views
@@ -204,8 +215,14 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                         updatePickupMarker();
                         zoomToMarkers();
                     }
+                    setNavigationAddress(); // set the suitable navigation
 
-                    setNavigationAddress();
+                    // check status to load the path
+                    if (TripStatus.ACCEPTED.getValue().equals(tripStatus)) {
+                        loadPickupDirections();
+                    } else if (TripStatus.STARTED.getValue().equals(tripStatus)) {
+                        loadDestinationDirections();
+                    }
                 }
             }
 
@@ -244,8 +261,9 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                 updateTripStatusUI();
                 updateUI();
 
-                // hide navigation layout
+                // hide navigation layout and clear map path
                 hideNavigationLayout();
+                clearPath();
             } else {
                 // show msg
                 String msg = AppUtils.getResponseMsg(this, serverResponse, R.string.failed_arriving);
@@ -269,7 +287,10 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
 
                 // show destination marker
                 showDestinationMarker();
+
+                // set navigation address and load the path
                 setNavigationAddress();
+                loadDestinationDirections();
             } else {
                 // show msg
                 String msg = AppUtils.getResponseMsg(this, serverResponse, R.string.failed_starting_trip);
@@ -293,6 +314,15 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                 String msg = AppUtils.getResponseMsg(this, serverResponse, R.string.failed_ending_trip);
                 Utils.showShortToast(this, msg);
             }
+        } else if (Const.TAG_DIRECTIONS.equals(tag)) {
+            // get points list
+            DirectionsResponse directionsResponse = (DirectionsResponse) response;
+            List<LatLng> points = directionsController.getPoints(directionsResponse);
+
+            // draw path if possible
+            if (points != null) {
+                drawPath(points);
+            }
         }
     }
 
@@ -307,7 +337,7 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                 super.onFail(ex, statusCode, tag);
                 firstTripDetailsReq = false;
             }
-        } else {
+        } else if (!Const.TAG_DIRECTIONS.equals(tag)) {
             super.onFail(ex, statusCode, tag);
         }
     }
@@ -594,6 +624,71 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
             double lng = locationController.getLongitude(location);
 
             Utils.openGoogleMapsNavigation(this, lat, lng);
+        }
+    }
+
+    private void loadPickupDirections() {
+        // clear current path
+        clearPath();
+
+        // load the path if possible
+        MongoLocation location = trip.getPickupLocation();
+        if (location != null) {
+            loadDirections(locationController.getLatitude(location), locationController.getLongitude(location));
+        }
+    }
+
+    private void loadDestinationDirections() {
+        // clear current path
+        clearPath();
+
+        // load the path if possible
+        MongoLocation location = trip.getDestinationLocation();
+        if (location != null) {
+            loadDirections(locationController.getLatitude(location), locationController.getLongitude(location));
+        }
+    }
+
+    private void loadDirections(double toLat, double toLng) {
+        // check current location
+        Location location = LocationUtils.getLastKnownLocation(this);
+        if (location == null) {
+            // exit
+            return;
+        }
+
+        // prepare params
+        String apiKey = getString(R.string.google_api_server_key);
+        String language = TwselaApp.getLanguage(this);
+
+        // send the request
+        ConnectionHandler connectionHandler = ApiRequests.getDirections(this, this, location.getLatitude(),
+                location.getLongitude(), toLat, toLng, apiKey, language);
+        cancelWhenDestroyed(connectionHandler);
+    }
+
+    private void drawPath(List<LatLng> points) {
+        // check map
+        if (map == null) {
+            return;
+        }
+
+        // prepare polyline options obj
+        PolylineOptions options = new PolylineOptions()
+                .addAll(points)
+                .width(12)
+                .color(Color.DKGRAY)
+                .geodesic(true);
+
+        // draw the polyline
+        pathPolyline = map.addPolyline(options);
+    }
+
+    private void clearPath() {
+        // check map
+        if (map != null && pathPolyline != null) {
+            pathPolyline.remove();
+            return;
         }
     }
 }
