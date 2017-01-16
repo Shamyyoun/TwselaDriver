@@ -3,6 +3,7 @@
     <string name="app_name">Twsela Driver</string>
     <string name="google_geo_api_key">AIzaSyDl2B55haMJGm7M5spnRzHR5EG8FwR_qMk</string>
     <string name="google_api_server_key">AIzaSyDtbjEEFybhBtR7Sl0wj6qXvUM9X2pim4s</string>
+    <string name="currency">USD</string>
 
 
     <!-- untranslated strings -->
@@ -92,6 +93,7 @@
     <string name="km">km</string>
     <string name="failed_calculating_distance">Failed calculating distance</string>
     <string name="couldnt_get_your_current_location">Couldn\'t get your current location</string>
+    <string name="trip_fare_c">Trip Fare:</string>
 
 
     <!-- Arrays -->

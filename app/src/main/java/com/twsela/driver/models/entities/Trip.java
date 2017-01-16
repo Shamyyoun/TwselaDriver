@@ -45,6 +45,9 @@ public class Trip {
     @SerializedName("end_time")
     @Expose
     private String endTime;
+    @SerializedName("cost")
+    @Expose
+    private float cost;
 
     public String getPassengerId() {
         return passengerId;
@@ -148,5 +151,13 @@ public class Trip {
 
     public void setActualDestinationLocation(MongoLocation actualDestinationLocation) {
         this.actualDestinationLocation = actualDestinationLocation;
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public void setCost(float cost) {
+        this.cost = cost;
     }
 }

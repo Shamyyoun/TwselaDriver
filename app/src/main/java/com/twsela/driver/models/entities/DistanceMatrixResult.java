@@ -5,7 +5,7 @@ package com.twsela.driver.models.entities;
  */
 public class DistanceMatrixResult {
     public String text;
-    public int value; // in meters
+    public int value;
 
     public String getText() {
         return text;

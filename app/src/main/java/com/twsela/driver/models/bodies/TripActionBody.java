@@ -22,6 +22,9 @@ public class TripActionBody {
     @SerializedName("actual_destination_address")
     @Expose
     private String actualDestinationAddress;
+    @SerializedName("total_distance_km")
+    @Expose
+    private float totalDistanceKm;
 
     public String getDriverId() {
         return driverId;
@@ -63,4 +66,11 @@ public class TripActionBody {
         this.actualDestinationAddress = actualDestinationAddress;
     }
 
+    public float getTotalDistanceKm() {
+        return totalDistanceKm;
+    }
+
+    public void setTotalDistanceKm(float totalDistanceKm) {
+        this.totalDistanceKm = totalDistanceKm;
+    }
 }

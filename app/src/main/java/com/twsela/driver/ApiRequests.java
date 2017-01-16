@@ -159,7 +159,8 @@ public class ApiRequests {
 
     public static ConnectionHandler<ServerResponse> endTrip(Context context, ConnectionListener<ServerResponse> listener,
                                                             String driverId, String carId, String tripId,
-                                                            double lat, double lng, String address) {
+                                                            double lat, double lng, String address,
+                                                            float distanceKm) {
 
         // prepare url
         String url = AppUtils.getDriverApiUrl(Const.ROUTE_END_TRIP);
@@ -173,6 +174,7 @@ public class ApiRequests {
         body.setDriverId(driverId);
         body.setCarId(carId);
         body.setTripId(tripId);
+        body.setTotalDistanceKm(distanceKm);
         MongoLocation location = new MongoLocation();
         List<Double> coordinates = new ArrayList<>(2);
         coordinates.add(lat);
@@ -206,10 +208,10 @@ public class ApiRequests {
     }
 
     public static ConnectionHandler<DirectionsResponse> getDirections(Context context,
-                                                                          ConnectionListener<DirectionsResponse> listener,
-                                                                          double originLat, double originLng,
-                                                                          double destLat, double destLng,
-                                                                          String apiKey, String language) {
+                                                                      ConnectionListener<DirectionsResponse> listener,
+                                                                      double originLat, double originLng,
+                                                                      double destLat, double destLng,
+                                                                      String apiKey, String language) {
         // prepare url
         String url = String.format(Locale.ENGLISH,
                 "https://maps.googleapis.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&language=%s&key=%s",

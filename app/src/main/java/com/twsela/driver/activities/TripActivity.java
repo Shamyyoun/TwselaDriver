@@ -30,12 +30,15 @@ import com.twsela.driver.TwselaApp;
 import com.twsela.driver.connection.ConnectionHandler;
 import com.twsela.driver.controllers.ActiveUserController;
 import com.twsela.driver.controllers.DirectionsController;
+import com.twsela.driver.controllers.DistanceMatrixController;
 import com.twsela.driver.controllers.LocationController;
 import com.twsela.driver.controllers.TripController;
+import com.twsela.driver.models.entities.DistanceMatrixResult;
 import com.twsela.driver.models.entities.MongoLocation;
 import com.twsela.driver.models.entities.Trip;
 import com.twsela.driver.models.enums.TripStatus;
 import com.twsela.driver.models.responses.DirectionsResponse;
+import com.twsela.driver.models.responses.DistanceMatrixResponse;
 import com.twsela.driver.models.responses.ServerResponse;
 import com.twsela.driver.models.responses.TripResponse;
 import com.twsela.driver.utils.AppUtils;
@@ -57,6 +60,7 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     private LocationController locationController;
     private ActiveUserController activeUserController;
     private DirectionsController directionsController;
+    private DistanceMatrixController distanceMatrixController;
 
     private SupportMapFragment mapFragment;
     private GoogleMap map;
@@ -73,6 +77,7 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     private Marker[] markers;
     private boolean firstTripDetailsReq = true;
     private Polyline pathPolyline;
+    private Location actualDestinationLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +91,7 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
         locationController = new LocationController();
         activeUserController = new ActiveUserController(this);
         directionsController = new DirectionsController();
+        distanceMatrixController = new DistanceMatrixController();
         markers = new Marker[3];
 
         // init views
@@ -323,6 +329,22 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
             if (points != null) {
                 drawPath(points);
             }
+        } else if (Const.TAG_DISTANCE_MATRIX.equals(tag)) {
+            // get distance result
+            DistanceMatrixResponse distanceMatrixResponse = (DistanceMatrixResponse) response;
+            DistanceMatrixResult distanceResult = distanceMatrixController.getDistanceResult(distanceMatrixResponse);
+
+            // check result
+            if (distanceResult != null) {
+                // convert from meters to km
+                float distanceKm = (float) distanceResult.getValue() / 1000;
+
+                // send end trip request
+                showProgressDialog();
+                endTrip(distanceKm);
+            } else {
+                Utils.showShortToast(this, R.string.failed_calculating_distance);
+            }
         }
     }
 
@@ -518,33 +540,34 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
 
     private void preEndTrip() {
         // prepare actual destination
-        Location location = LocationUtils.getLastKnownLocation(this);
-        if (location == null) {
+        actualDestinationLocation = LocationUtils.getLastKnownLocation(this);
+        if (actualDestinationLocation == null) {
             // show msg and exit
             Utils.showShortToast(this, R.string.couldnt_get_your_current_location);
             return;
         }
 
-        // get address
-        String address = LocationUtils.getAddress(this, location.getLatitude(), location.getLongitude());
-
         // check internet connection
         if (hasInternetConnection()) {
             showProgressDialog();
-            endTrip(location.getLatitude(), location.getLongitude(), address);
+            // load distance first
+            loadDistanceMatrix();
         } else {
             Utils.showShortToast(this, R.string.no_internet_connection);
         }
     }
 
-    private void endTrip(double lat, double lng, String address) {
+    private void endTrip(float distance) {
         // prepare params
         String driverId = activeUserController.getUser().getId();
         String carId = activeUserController.getCarId();
+        double lat = actualDestinationLocation.getLatitude();
+        double lng = actualDestinationLocation.getLongitude();
+        String address = LocationUtils.getAddress(this, lat, lng);
 
         // send the request
         ConnectionHandler connectionHandler = ApiRequests.endTrip(this, this, driverId, carId,
-                id, lat, lng, address);
+                id, lat, lng, address, distance);
         cancelWhenDestroyed(connectionHandler);
     }
 
@@ -690,5 +713,20 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
             pathPolyline.remove();
             return;
         }
+    }
+
+    private void loadDistanceMatrix() {
+        // prepare params
+        double originLat = locationController.getLatitude(trip.getPickupLocation());
+        double originLng = locationController.getLongitude(trip.getPickupLocation());
+        double destLat = actualDestinationLocation.getLatitude();
+        double destLng = actualDestinationLocation.getLongitude();
+        String apiKey = getString(R.string.google_api_server_key);
+        String language = TwselaApp.getLanguage(this);
+
+        // send the request
+        ConnectionHandler connectionHandler = ApiRequests.getDistanceMatrix(this, this, originLat,
+                originLng, destLat, destLng, apiKey, language);
+        cancelWhenDestroyed(connectionHandler);
     }
 }
