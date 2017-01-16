@@ -71,6 +71,9 @@ public class LocationUtils {
     public static Location getLastKnownLocation(Context context) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (location == null) {
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
         return location;
     }
 

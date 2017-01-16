@@ -17,6 +17,7 @@ public class Const {
 
     // Server Constants:--------------------
     public static final int SER_CODE_200 = 200;
+    public static final String SER_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String SER_DATE_FORMAT = "yyyy/MM/dd";
     public static final String SER_TIME_FORMAT = "HH:mm:ss";
 
@@ -58,4 +59,7 @@ public class Const {
     // Notification IDs:-------------------
     public static final int NOTI_UPDATE_LOCATION_SERVICES = 1;
     public static final int NOTI_TRIP_CHANGED = 2;
+
+    // Others:-----------------------------
+    public static final String TAG_DISTANCE_MATRIX = "distancematrix";
 }

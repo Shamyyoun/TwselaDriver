@@ -1,5 +1,7 @@
 package com.twsela.driver.activities;
 
+import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -29,6 +31,7 @@ import com.twsela.driver.models.enums.TripStatus;
 import com.twsela.driver.models.responses.ServerResponse;
 import com.twsela.driver.models.responses.TripResponse;
 import com.twsela.driver.utils.AppUtils;
+import com.twsela.driver.utils.LocationUtils;
 import com.twsela.driver.utils.MarkerUtils;
 import com.twsela.driver.utils.Utils;
 
@@ -263,8 +266,10 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                 // remove active trip
                 activeUserController.removeActiveTrip();
 
-                // show msg and finish
-                Utils.showShortToast(this, R.string.trip_ended_successfully);
+                // open trip details activity
+                Intent intent = new Intent(this, TripDetailsActivity.class);
+                intent.putExtra(Const.KEY_ID, id);
+                startActivity(intent);
                 finish();
             } else {
                 // show msg
@@ -465,22 +470,34 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     }
 
     private void preEndTrip() {
+        // prepare actual destination
+        Location location = LocationUtils.getLastKnownLocation(this);
+        if (location == null) {
+            // show msg and exit
+            Utils.showShortToast(this, R.string.couldnt_get_your_current_location);
+            return;
+        }
+
+        // get address
+        String address = LocationUtils.getAddress(this, location.getLatitude(), location.getLongitude());
+
         // check internet connection
         if (hasInternetConnection()) {
             showProgressDialog();
-            endTrip();
+            endTrip(location.getLatitude(), location.getLongitude(), address);
         } else {
             Utils.showShortToast(this, R.string.no_internet_connection);
         }
     }
 
-    private void endTrip() {
+    private void endTrip(double lat, double lng, String address) {
         // prepare params
         String driverId = activeUserController.getUser().getId();
         String carId = activeUserController.getCarId();
 
         // send the request
-        ConnectionHandler connectionHandler = ApiRequests.endTrip(this, this, driverId, carId, id);
+        ConnectionHandler connectionHandler = ApiRequests.endTrip(this, this, driverId, carId,
+                id, lat, lng, address);
         cancelWhenDestroyed(connectionHandler);
     }
 

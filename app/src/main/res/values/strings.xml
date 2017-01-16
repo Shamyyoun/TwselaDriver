@@ -2,6 +2,7 @@
     <!-- main strings -->
     <string name="app_name">Twsela Driver</string>
     <string name="google_geo_api_key">AIzaSyDl2B55haMJGm7M5spnRzHR5EG8FwR_qMk</string>
+    <string name="distance_matrix_api_key">AIzaSyDtbjEEFybhBtR7Sl0wj6qXvUM9X2pim4s</string>
 
 
     <!-- untranslated strings -->
@@ -13,7 +14,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="unplug_mobile_cable_from_computer">Please unplug the mobile cable from the computer</string>
-    <string name="install_google_play_services">Please install Google Play Services</string>
+    <string name="install_or_update_google_play_services">Please install or update Google Play Services</string>
     <string name="search">Search</string>
     <string name="search_dotted">Search...</string>
     <string name="you_need_to_grant_required_permissions">You need to grant required permissions</string>
@@ -82,6 +83,15 @@
     <string name="logout">Logout</string>
     <string name="logout_q">Logout?</string>
     <string name="you_cant_logout_when_you_are_online">You can\'t logout when you are online</string>
+    <string name="trip_duration_c">Trip Duration:</string>
+    <string name="distance_c">Distance:</string>
+    <string name="days">days</string>
+    <string name="hrs">hrs</string>
+    <string name="mins">mins</string>
+    <string name="seconds">seconds</string>
+    <string name="km">km</string>
+    <string name="failed_calculating_distance">Failed calculating distance</string>
+    <string name="couldnt_get_your_current_location">Couldn\'t get your current location</string>
 
 
     <!-- Arrays -->

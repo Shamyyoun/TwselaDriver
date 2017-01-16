@@ -21,7 +21,7 @@ public class SplashActivity extends ParentActivity {
         // check google play services
         if (!PlayServicesUtils.isPlayServicesAvailable(this)) {
             // show msg and finish
-            Utils.showLongToast(this, R.string.install_google_play_services);
+            Utils.showLongToast(this, R.string.install_or_update_google_play_services);
             finish();
             return;
         }

@@ -1,10 +1,6 @@
 package com.twsela.driver.activities;
 
-import android.app.KeyguardManager;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,56 +8,59 @@ import android.widget.TextView;
 import com.twsela.driver.ApiRequests;
 import com.twsela.driver.Const;
 import com.twsela.driver.R;
+import com.twsela.driver.TwselaApp;
 import com.twsela.driver.connection.ConnectionHandler;
-import com.twsela.driver.controllers.ActiveUserController;
+import com.twsela.driver.controllers.DistanceMatrixController;
+import com.twsela.driver.controllers.LocationController;
 import com.twsela.driver.controllers.TripController;
+import com.twsela.driver.models.entities.DistanceMatrixResult;
 import com.twsela.driver.models.entities.Trip;
-import com.twsela.driver.models.enums.TripStatus;
-import com.twsela.driver.models.responses.ServerResponse;
+import com.twsela.driver.models.responses.DistanceMatrixResponse;
 import com.twsela.driver.models.responses.TripResponse;
 import com.twsela.driver.utils.AppUtils;
 import com.twsela.driver.utils.Utils;
 
-public class TripRequestActivity extends ParentActivity {
+public class TripDetailsActivity extends ParentActivity {
     private String tripId;
-    private ActiveUserController activeUserController;
     private TripController tripController;
+    private LocationController locationController;
+    private DistanceMatrixController distanceMatrixController;
 
     private TextView tvPassengerName;
     private TextView tvPickupAddress;
     private TextView tvDestinationAddress;
-    private Button btnAccept;
-    private Button btnIgnore;
+    private TextView tvDistance;
+    private TextView tvDuration;
+    private Button btnClose;
 
     private Trip trip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trip_request);
+        setContentView(R.layout.activity_trip_details);
 
         // obtain main objects
         tripId = getIntent().getStringExtra(Const.KEY_ID);
-        activeUserController = new ActiveUserController(this);
         tripController = new TripController();
+        locationController = new LocationController();
+        distanceMatrixController = new DistanceMatrixController();
 
         // init views
         tvPassengerName = (TextView) findViewById(R.id.tv_passenger_name);
         tvPickupAddress = (TextView) findViewById(R.id.tv_pickup_address);
         tvDestinationAddress = (TextView) findViewById(R.id.tv_destination_address);
-        btnAccept = (Button) findViewById(R.id.btn_accept);
-        btnIgnore = (Button) findViewById(R.id.btn_ignore);
+        tvDistance = (TextView) findViewById(R.id.tv_distance);
+        tvDuration = (TextView) findViewById(R.id.tv_duration);
+        btnClose = (Button) findViewById(R.id.btn_close);
 
         // add listeners
-        btnAccept.setOnClickListener(this);
-        btnIgnore.setOnClickListener(this);
+        btnClose.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.btn_accept) {
-            preAcceptRequest();
-        } else if (v.getId() == R.id.btn_ignore) {
+        if (v.getId() == R.id.btn_close) {
             onBackPressed();
         } else {
             super.onClick(v);
@@ -72,25 +71,8 @@ public class TripRequestActivity extends ParentActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        // load trip details and wake up the device
+        // load trip details
         preLoadTripDetails();
-        wakeupDevice();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        // load trip details and wake up the device
-        tripId = intent.getStringExtra(Const.KEY_ID);
-        preLoadTripDetails();
-        wakeupDevice();
-    }
-
-    private void wakeupDevice() {
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
-        wakeLock.acquire();
     }
 
     private void updateUI() {
@@ -110,14 +92,30 @@ public class TripRequestActivity extends ParentActivity {
         }
 
         // set destination
-        if (trip.getDestinationLocation() != null) {
-            if (!Utils.isNullOrEmpty(trip.getDestinationAddress())) {
-                tvDestinationAddress.setText(trip.getDestinationAddress());
+        if (trip.getActualDestinationLocation() != null) {
+            if (!Utils.isNullOrEmpty(trip.getActualDestinationAddress())) {
+                tvDestinationAddress.setText(trip.getActualDestinationAddress());
             } else {
                 tvDestinationAddress.setText(R.string.point_on_map);
             }
         } else {
             tvDestinationAddress.setText(R.string.not_available);
+        }
+
+        // set duration
+        String duration = tripController.getDuration(this, trip);
+        if (duration != null) {
+            tvDuration.setText(duration);
+        } else {
+            tvDuration.setText("---------------");
+        }
+    }
+
+    private void updateDistanceUI(String distance) {
+        if (distance != null) {
+            tvDistance.setText(distance);
+        } else {
+            tvDistance.setText("---------------");
         }
     }
 
@@ -139,7 +137,6 @@ public class TripRequestActivity extends ParentActivity {
 
     @Override
     public void onSuccess(Object response, int statusCode, String tag) {
-        hideProgressDialog();
 
         // check tag
         if (Const.ROUTE_GET_DETAILS_BY_ID.equals(tag)) {
@@ -150,62 +147,44 @@ public class TripRequestActivity extends ParentActivity {
                 // update the ui
                 this.trip = tripResponse.getContent();
                 updateUI();
+
+                // load distance matrix
+                loadDistanceMatrix();
             } else {
                 // show msg
                 String msg = AppUtils.getResponseMsg(this, tripResponse, R.string.failed_loading_details);
                 Utils.showShortToast(this, msg);
             }
-        } else if (Const.ROUTE_ACCEPT_TRIP.equals(tag)) {
-            // accept trip request
-            // check response
-            ServerResponse serverResponse = (ServerResponse) response;
-            if (serverResponse.isSuccess()) {
-                // update active trip and open details activity
-                activeUserController.updateActiveTripStatus(tripId, TripStatus.ACCEPTED);
-                openTripActivity();
+        } else if (Const.TAG_DISTANCE_MATRIX.equals(tag)) {
+            hideProgressDialog();
+
+            // get distance matrix result
+            DistanceMatrixResponse distanceMatrixResponse = (DistanceMatrixResponse) response;
+            DistanceMatrixResult distanceResult = distanceMatrixController.getDistanceResult(distanceMatrixResponse);
+
+            // check it
+            if (distanceResult != null) {
+                updateDistanceUI(distanceResult.getText());
             } else {
+                updateDistanceUI(null);
                 // show msg
-                String msg = AppUtils.getResponseMsg(this, serverResponse, R.string.failed_accepting_request);
-                Utils.showShortToast(this, msg);
+                Utils.showShortToast(this, R.string.failed_calculating_distance);
             }
         }
     }
 
-    private void openTripActivity() {
-        Intent intent = new Intent(this, TripActivity.class);
-        intent.putExtra(Const.KEY_ID, tripId);
-        intent.putExtra(Const.KEY_STATUS, TripStatus.ACCEPTED.getValue());
-        startActivity(intent);
-        finish();
-    }
-
-    private void preAcceptRequest() {
-        // check internet connection
-        if (hasInternetConnection()) {
-            showProgressDialog();
-            acceptRequest();
-        } else {
-            Utils.showShortToast(this, R.string.no_internet_connection);
-        }
-    }
-
-    private void acceptRequest() {
+    private void loadDistanceMatrix() {
         // prepare params
-        String driverId = activeUserController.getUser().getId();
-        String carId = activeUserController.getCarId();
+        double originLat = locationController.getLatitude(trip.getPickupLocation());
+        double originLng = locationController.getLongitude(trip.getPickupLocation());
+        double destLat = locationController.getLatitude(trip.getActualDestinationLocation());
+        double destLng = locationController.getLongitude(trip.getActualDestinationLocation());
+        String distanceApiKey = getString(R.string.distance_matrix_api_key);
+        String language = TwselaApp.getLanguage(this);
 
         // send the request
-        ConnectionHandler connectionHandler = ApiRequests.acceptTrip(this, this, driverId, carId, tripId);
+        ConnectionHandler connectionHandler = ApiRequests.getDistanceMatrix(this, this, originLat,
+                originLng, destLat, destLng, distanceApiKey, language);
         cancelWhenDestroyed(connectionHandler);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        // release screen lock
-        KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
-        KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("TAG");
-        keyguardLock.disableKeyguard();
     }
 }

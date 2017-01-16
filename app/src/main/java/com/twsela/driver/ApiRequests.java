@@ -4,8 +4,10 @@ import android.content.Context;
 
 import com.twsela.driver.connection.ConnectionHandler;
 import com.twsela.driver.connection.ConnectionListener;
+import com.twsela.driver.models.bodies.TripActionBody;
 import com.twsela.driver.models.entities.Driver;
 import com.twsela.driver.models.entities.MongoLocation;
+import com.twsela.driver.models.responses.DistanceMatrixResponse;
 import com.twsela.driver.models.responses.LoginResponse;
 import com.twsela.driver.models.responses.ServerResponse;
 import com.twsela.driver.models.responses.TripResponse;
@@ -14,6 +16,7 @@ import com.twsela.driver.utils.AppUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -131,12 +134,6 @@ public class ApiRequests {
         return tripAction(context, listener, Const.ROUTE_START_TRIP, driverId, carId, tripId);
     }
 
-    public static ConnectionHandler<ServerResponse> endTrip(Context context, ConnectionListener<ServerResponse> listener,
-                                                            String driverId, String carId, String tripId) {
-
-        return tripAction(context, listener, Const.ROUTE_END_TRIP, driverId, carId, tripId);
-    }
-
     public static ConnectionHandler<ServerResponse> tripAction(Context context, ConnectionListener<ServerResponse> listener, String route,
                                                                String driverId, String carId, String tripId) {
 
@@ -156,6 +153,54 @@ public class ApiRequests {
 
         // execute and return
         connectionHandler.executePost();
+        return connectionHandler;
+    }
+
+    public static ConnectionHandler<ServerResponse> endTrip(Context context, ConnectionListener<ServerResponse> listener,
+                                                            String driverId, String carId, String tripId,
+                                                            double lat, double lng, String address) {
+
+        // prepare url
+        String url = AppUtils.getDriverApiUrl(Const.ROUTE_END_TRIP);
+
+        // create connection handler
+        ConnectionHandler<ServerResponse> connectionHandler = new ConnectionHandler(context, url,
+                ServerResponse.class, listener, Const.ROUTE_END_TRIP);
+
+        // create and set the body
+        TripActionBody body = new TripActionBody();
+        body.setDriverId(driverId);
+        body.setCarId(carId);
+        body.setTripId(tripId);
+        MongoLocation location = new MongoLocation();
+        List<Double> coordinates = new ArrayList<>(2);
+        coordinates.add(lat);
+        coordinates.add(lng);
+        location.setCoordinates(coordinates);
+        body.setActualDestinationLocation(location);
+        body.setActualDestinationAddress(address);
+        connectionHandler.setBody(body);
+
+        // execute and return
+        connectionHandler.executeRawJson();
+        return connectionHandler;
+    }
+
+    public static ConnectionHandler<DistanceMatrixResponse> getDistanceMatrix(Context context,
+                                                                              ConnectionListener<DistanceMatrixResponse> listener,
+                                                                              double originLat, double originLng,
+                                                                              double destLat, double destLng,
+                                                                              String apiKey, String language) {
+        // prepare url
+        String url = String.format(Locale.ENGLISH,
+                "https://maps.googleapis.com/maps/api/distancematrix/json?origins=%f,%f&destinations=%f,%f&language=%s&key=%s",
+                originLat, originLng, destLat, destLng, language, apiKey);
+
+        // create connection handler
+        ConnectionHandler<DistanceMatrixResponse> connectionHandler = new ConnectionHandler(context, url,
+                DistanceMatrixResponse.class, listener, Const.TAG_DISTANCE_MATRIX);
+
+        connectionHandler.executeGet();
         return connectionHandler;
     }
 

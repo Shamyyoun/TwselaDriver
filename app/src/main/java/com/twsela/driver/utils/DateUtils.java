@@ -124,10 +124,55 @@ public class DateUtils {
         return calendar1.compareTo(calendar2);
     }
 
-    public static long difference(String strDate1, String strDate2, String dateFormat) {
+    /**
+     * method, used to get difference between two string dates in milliseconds
+     *
+     * @param strDate1
+     * @param strDate2
+     * @param dateFormat
+     * @return
+     */
+    public static long getDifferenceInMillies(String strDate1, String strDate2, String dateFormat) {
         long calMillis1 = convertToCalendar(strDate1, dateFormat).getTimeInMillis();
         long calMillis2 = convertToCalendar(strDate2, dateFormat).getTimeInMillis();
 
         return calMillis2 - calMillis1;
+    }
+
+    /**
+     * method, used to get difference between two string dates as values array
+     *
+     * @param strDate1
+     * @param strDate2
+     * @param dateFormat
+     * @return
+     */
+    public static long[] getDifferenceArray(String strDate1, String strDate2, String dateFormat) {
+        long differenceInMillies = getDifferenceInMillies(strDate1, strDate2, dateFormat);
+
+        // prepare values
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        // days
+        long elapsedDays = differenceInMillies / daysInMilli;
+        differenceInMillies = differenceInMillies % daysInMilli;
+
+        // hours
+        long elapsedHours = differenceInMillies / hoursInMilli;
+        differenceInMillies = differenceInMillies % hoursInMilli;
+
+        // minutes
+        long elapsedMinutes = differenceInMillies / minutesInMilli;
+        differenceInMillies = differenceInMillies % minutesInMilli;
+
+        // seconds
+        long elapsedSeconds = differenceInMillies / secondsInMilli;
+
+        // create the array
+        long[] differenceArr = new long[]{elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds};
+        return differenceArr;
     }
 }
