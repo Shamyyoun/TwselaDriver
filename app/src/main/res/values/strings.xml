@@ -79,6 +79,8 @@
     <string name="trip_started_successfully">Trip started successfully</string>
     <string name="failed_ending_trip">Failed ending trip</string>
     <string name="trip_ended_successfully">Trip ended successfully</string>
+    <string name="logout">Logout</string>
+    <string name="logout_q">Logout?</string>
 
 
     <!-- Arrays -->
