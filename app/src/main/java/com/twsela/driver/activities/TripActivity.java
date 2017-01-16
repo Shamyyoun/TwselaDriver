@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -26,6 +27,7 @@ import com.twsela.driver.connection.ConnectionHandler;
 import com.twsela.driver.controllers.ActiveUserController;
 import com.twsela.driver.controllers.LocationController;
 import com.twsela.driver.controllers.TripController;
+import com.twsela.driver.models.entities.MongoLocation;
 import com.twsela.driver.models.entities.Trip;
 import com.twsela.driver.models.enums.TripStatus;
 import com.twsela.driver.models.responses.ServerResponse;
@@ -36,7 +38,7 @@ import com.twsela.driver.utils.MarkerUtils;
 import com.twsela.driver.utils.Utils;
 
 public class TripActivity extends ParentActivity implements OnMapReadyCallback, Runnable {
-    private static final int MAP_PADDING = 200;
+    private static final int MAP_PADDING = 300;
     private static final int MARKER_SIGN_DRIVER = 0;
     private static final int MARKER_SIGN_PICKUP = 1;
     private static final int MARKER_SIGN_DESTINATION = 2;
@@ -53,6 +55,9 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     private TextView tvPassengerName;
     private Button btnMainAction;
     private Button btnCancel;
+    private View layoutNavigation;
+    private TextView tvAddress;
+    private ImageButton ibNavigate;
 
     private Trip trip;
     private Handler tripDetailsHandler;
@@ -78,10 +83,14 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
         tvPassengerName = (TextView) findViewById(R.id.tv_passenger_name);
         btnMainAction = (Button) findViewById(R.id.btn_main_action);
         btnCancel = (Button) findViewById(R.id.btn_cancel);
+        layoutNavigation = findViewById(R.id.layout_navigation);
+        tvAddress = (TextView) findViewById(R.id.tv_address);
+        ibNavigate = (ImageButton) findViewById(R.id.ib_navigate);
 
         // add listeners
         btnMainAction.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
+        ibNavigate.setOnClickListener(this);
     }
 
     @Override
@@ -90,6 +99,8 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
             onMainActionButton();
         } else if (v.getId() == R.id.btn_cancel) {
             preCancelTrip();
+        } else if (v.getId() == R.id.ib_navigate) {
+            onNavigate();
         } else {
             super.onClick(v);
         }
@@ -193,6 +204,8 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                         updatePickupMarker();
                         zoomToMarkers();
                     }
+
+                    setNavigationAddress();
                 }
             }
 
@@ -230,6 +243,9 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                 tripStatus = TripStatus.DRIVER_ARRIVED.getValue();
                 updateTripStatusUI();
                 updateUI();
+
+                // hide navigation layout
+                hideNavigationLayout();
             } else {
                 // show msg
                 String msg = AppUtils.getResponseMsg(this, serverResponse, R.string.failed_arriving);
@@ -253,6 +269,7 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
 
                 // show destination marker
                 showDestinationMarker();
+                setNavigationAddress();
             } else {
                 // show msg
                 String msg = AppUtils.getResponseMsg(this, serverResponse, R.string.failed_starting_trip);
@@ -519,5 +536,64 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
         // send the request
         ConnectionHandler connectionHandler = ApiRequests.cancelTrip(this, this, driverId, carId, id);
         cancelWhenDestroyed(connectionHandler);
+    }
+
+    private void setNavigationAddress() {
+
+        // check trip status to prepare suitable address
+        String address = null;
+        if (TripStatus.ACCEPTED.getValue().equals(tripStatus)) {
+            // pickup address
+            if (trip.getPickupAddress() != null) {
+                address = getString(R.string.pickup_c) + " " + trip.getPickupAddress();
+            } else if (trip.getPickupLocation() != null) {
+                MongoLocation location = trip.getPickupLocation();
+                address = LocationUtils.getAddress(this, locationController.getLatitude(location),
+                        locationController.getLongitude(location));
+                address = getString(R.string.pickup_c) + " " + address;
+            }
+        } else if (TripStatus.STARTED.getValue().equals(tripStatus)) {
+            // pickup address
+            if (trip.getDestinationAddress() != null) {
+                address = getString(R.string.destination_c) + " " + trip.getDestinationAddress();
+            } else if (trip.getDestinationLocation() != null) {
+                MongoLocation location = trip.getDestinationLocation();
+                address = LocationUtils.getAddress(this, locationController.getLatitude(location),
+                        locationController.getLongitude(location));
+                address = getString(R.string.destination_c) + " " + address;
+            }
+        }
+
+        // check address
+        if (address != null) {
+            // set address and show navigation layout
+            tvAddress.setText(address);
+            layoutNavigation.setVisibility(View.VISIBLE);
+        } else {
+            // hide navigation layout
+            layoutNavigation.setVisibility(View.GONE);
+        }
+    }
+
+    private void hideNavigationLayout() {
+        layoutNavigation.setVisibility(View.GONE);
+    }
+
+    private void onNavigate() {
+        // check status to prepare suitable location
+        MongoLocation location = null;
+        if (TripStatus.ACCEPTED.getValue().equals(tripStatus)) {
+            location = trip.getPickupLocation();
+        } else if (TripStatus.STARTED.getValue().equals(tripStatus)) {
+            location = trip.getDestinationLocation();
+        }
+
+        // open navigation if possible
+        if (location != null) {
+            double lat = locationController.getLatitude(location);
+            double lng = locationController.getLongitude(location);
+
+            Utils.openGoogleMapsNavigation(this, lat, lng);
+        }
     }
 }

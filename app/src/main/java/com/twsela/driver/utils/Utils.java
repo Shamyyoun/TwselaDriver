@@ -745,6 +745,7 @@ public class Utils {
 
     /**
      * method, used to get resource uri
+     *
      * @param context
      * @param resId
      * @return
@@ -755,6 +756,7 @@ public class Utils {
 
     /**
      * method, used to play sound from raw folder
+     *
      * @param context
      * @param soundRawResId
      */
@@ -781,6 +783,26 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    /**
+     * method, used to open google maps app navigation for passed point or open google maps url if not found
+     *
+     * @param context
+     * @param lat
+     * @param lng
+     */
+    public static void openGoogleMapsNavigation(Context context, double lat, double lng) {
+        try {
+            Uri url = Uri.parse("google.navigation:q=" + lat + "," + lng);
+            Intent intent = new Intent(Intent.ACTION_VIEW, url);
+            intent.setPackage("com.google.android.apps.maps");
+            context.startActivity(intent);
+        } catch (Exception e) {
+            Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                    Uri.parse("http://maps.google.com/maps?daddr=" + lat + "," + lng));
+            context.startActivity(intent);
         }
     }
 }
