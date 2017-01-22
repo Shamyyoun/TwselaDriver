@@ -148,7 +148,7 @@ public class ParentFragment extends Fragment implements View.OnClickListener, Co
     }
 
     public boolean hasInternetConnection() {
-        return Utils.hasConnection(activity);
+        return Utils.hasInternetConnection(activity);
     }
 
     public void printStackTrace(Exception e) {

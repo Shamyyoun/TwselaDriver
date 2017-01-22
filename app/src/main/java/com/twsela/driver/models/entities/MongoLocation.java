@@ -31,4 +31,12 @@ public class MongoLocation {
         this.type = type;
     }
 
+    @Override
+    public String toString() {
+        try {
+            return "Latitude: " + coordinates.get(0) + " - Longitude: " + coordinates.get(1);
+        } catch (Exception e) {
+            return super.toString();
+        }
+    }
 }

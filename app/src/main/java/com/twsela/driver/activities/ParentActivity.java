@@ -213,7 +213,7 @@ public class ParentActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public boolean hasInternetConnection() {
-        return Utils.hasConnection(this);
+        return Utils.hasInternetConnection(this);
     }
 
     public void printStackTrace(Exception e) {

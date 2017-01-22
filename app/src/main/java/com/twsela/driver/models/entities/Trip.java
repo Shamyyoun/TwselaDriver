@@ -4,6 +4,8 @@ package com.twsela.driver.models.entities;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class Trip {
 
     @SerializedName("passenger_id")
@@ -48,6 +50,9 @@ public class Trip {
     @SerializedName("cost")
     @Expose
     private float cost;
+    @SerializedName("route_points")
+    @Expose
+    private List<MongoLocation> routePoints = null;
 
     public String getPassengerId() {
         return passengerId;
@@ -159,5 +164,13 @@ public class Trip {
 
     public void setCost(float cost) {
         this.cost = cost;
+    }
+
+    public List<MongoLocation> getRoutePoints() {
+        return routePoints;
+    }
+
+    public void setRoutePoints(List<MongoLocation> routePoints) {
+        this.routePoints = routePoints;
     }
 }

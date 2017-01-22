@@ -4,9 +4,9 @@ package com.twsela.driver.models.entities;
  * Created by Basim Alamuddin on 27/03/2016.
  */
 public class DistanceMatrixElement {
-    public DistanceMatrixResult distance;
-    public DistanceMatrixResult duration;
-    public String status;
+    private DistanceMatrixResult distance;
+    private DistanceMatrixResult duration;
+    private String status;
 
     public DistanceMatrixResult getDistance() {
         return distance;

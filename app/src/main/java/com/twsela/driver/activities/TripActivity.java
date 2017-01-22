@@ -33,7 +33,6 @@ import com.twsela.driver.controllers.DirectionsController;
 import com.twsela.driver.controllers.DistanceMatrixController;
 import com.twsela.driver.controllers.LocationController;
 import com.twsela.driver.controllers.TripController;
-import com.twsela.driver.models.entities.DistanceMatrixResult;
 import com.twsela.driver.models.entities.MongoLocation;
 import com.twsela.driver.models.entities.Trip;
 import com.twsela.driver.models.enums.TripStatus;
@@ -330,21 +329,14 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                 drawPath(points);
             }
         } else if (Const.TAG_DISTANCE_MATRIX.equals(tag)) {
-            // get distance result
+            // get distance
             DistanceMatrixResponse distanceMatrixResponse = (DistanceMatrixResponse) response;
-            DistanceMatrixResult distanceResult = distanceMatrixController.getDistanceResult(distanceMatrixResponse);
+            long distanceMeters = distanceMatrixController.getTotalDistance(distanceMatrixResponse);
+            float distanceKm = distanceMeters / 1000f;
 
-            // check result
-            if (distanceResult != null) {
-                // convert from meters to km
-                float distanceKm = (float) distanceResult.getValue() / 1000;
-
-                // send end trip request
-                showProgressDialog();
-                endTrip(distanceKm);
-            } else {
-                Utils.showShortToast(this, R.string.failed_calculating_distance);
-            }
+            // send end trip request
+            showProgressDialog();
+            endTrip(distanceKm);
         }
     }
 
@@ -716,17 +708,52 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     }
 
     private void loadDistanceMatrix() {
-        // prepare params
-        double originLat = locationController.getLatitude(trip.getPickupLocation());
-        double originLng = locationController.getLongitude(trip.getPickupLocation());
-        double destLat = actualDestinationLocation.getLatitude();
-        double destLng = actualDestinationLocation.getLongitude();
+        // prepare origins and destinations params
+        String origins = "";
+        String destinations = "";
+
+        // check route points
+        List<MongoLocation> points = trip.getRoutePoints();
+        if (points != null && points.size() > 1) {
+            // prepare using points list
+            for (int i = 0; i < points.size() - 1; i++) {
+                // get locations
+                MongoLocation location1 = points.get(i);
+                MongoLocation location2 = points.get(i + 1);
+
+                // get values
+                double lat1 = locationController.getLatitude(location1);
+                double lng1 = locationController.getLongitude(location1);
+                double lat2 = locationController.getLatitude(location2);
+                double lng2 = locationController.getLongitude(location2);
+
+                if (i != 0) {
+                    origins += "|";
+                    destinations += "|";
+                }
+
+                origins += lat1 + "," + lng1;
+                destinations += lat2 + "," + lng2;
+            }
+
+
+        } else {
+            // prepare using pickup and actual destination points
+            double originLat = locationController.getLatitude(trip.getPickupLocation());
+            double originLng = locationController.getLongitude(trip.getPickupLocation());
+            double destLat = actualDestinationLocation.getLatitude();
+            double destLng = actualDestinationLocation.getLongitude();
+
+            origins = originLat + "," + originLng;
+            destinations = destLat + "," + destLng;
+        }
+
+
         String apiKey = getString(R.string.google_api_server_key);
         String language = TwselaApp.getLanguage(this);
 
         // send the request
-        ConnectionHandler connectionHandler = ApiRequests.getDistanceMatrix(this, this, originLat,
-                originLng, destLat, destLng, apiKey, language);
+        ConnectionHandler connectionHandler = ApiRequests.getDistanceMatrix(this, this, origins, destinations, apiKey, language);
         cancelWhenDestroyed(connectionHandler);
     }
 }

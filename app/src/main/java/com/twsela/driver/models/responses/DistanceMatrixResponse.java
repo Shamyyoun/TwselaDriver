@@ -11,11 +11,11 @@ import java.util.List;
  */
 public class DistanceMatrixResponse {
     @SerializedName("origin_addresses")
-    public List<String> originAddresses = new ArrayList<>();
+    private List<String> originAddresses = new ArrayList<>();
     @SerializedName("destination_addresses")
-    public List<String> destinationAddresses = new ArrayList<>();
-    public List<DistanceMatrixRow> rows = new ArrayList<>();
-    public String status;
+    private List<String> destinationAddresses = new ArrayList<>();
+    private List<DistanceMatrixRow> rows = new ArrayList<>();
+    private String status;
 
     public List<String> getOriginAddresses() {
         return originAddresses;

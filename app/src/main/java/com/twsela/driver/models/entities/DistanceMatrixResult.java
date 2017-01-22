@@ -4,8 +4,8 @@ package com.twsela.driver.models.entities;
  * Created by Shamyyoun on 16/01/2017.
  */
 public class DistanceMatrixResult {
-    public String text;
-    public int value;
+    private String text;
+    private int value;
 
     public String getText() {
         return text;

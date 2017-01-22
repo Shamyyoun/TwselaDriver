@@ -21,6 +21,7 @@ import com.twsela.driver.Const;
 import com.twsela.driver.R;
 import com.twsela.driver.activities.MainActivity;
 import com.twsela.driver.controllers.ActiveUserController;
+import com.twsela.driver.models.entities.Driver;
 import com.twsela.driver.utils.Utils;
 
 /**
@@ -137,11 +138,16 @@ public class UpdateLocationService extends Service implements GoogleApiClient.Co
         double lat = location.getLatitude();
         double lng = location.getLongitude();
         float bearing = location.getBearing();
-        String id = activeUserController.getUser().getId();
+        Driver user = activeUserController.getUser();
+        String id = user.getId();
+        String tripId = null;
+        if (user.getActiveTrip() != null) {
+            tripId = user.getActiveTrip().getId();
+        }
 
         // create and send the request if possible
-        if (Utils.hasConnection(this)) {
-            ApiRequests.updateLocation(this, null, id, lat, lng, bearing);
+        if (Utils.hasInternetConnection(this)) {
+            ApiRequests.updateLocation(this, null, id, lat, lng, bearing, tripId);
         }
     }
 

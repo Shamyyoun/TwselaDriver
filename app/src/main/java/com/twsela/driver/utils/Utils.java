@@ -168,7 +168,7 @@ public class Utils {
      * @param ctx
      * @return
      */
-    public static boolean hasConnection(Context ctx) {
+    public static boolean hasInternetConnection(Context ctx) {
         ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiNetwork = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifiNetwork != null && wifiNetwork.isConnected()) {

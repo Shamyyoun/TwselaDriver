@@ -54,4 +54,24 @@ public class LocationController {
         LatLng latLng = new LatLng(getLatitude(location), getLongitude(location));
         return latLng;
     }
+
+    public float calculateDistance(List<MongoLocation> points) {
+        float distance = 0; // final distance
+
+        float[] distanceResult = new float[1]; // used to hold every calculation result
+        for (int i = 0; i < points.size() - 1; i++) {
+            // get objects
+            MongoLocation location1 = points.get(i);
+            MongoLocation location2 = points.get(i + 1);
+
+            // calc distance
+            Location.distanceBetween(getLatitude(location1), getLongitude(location1),
+                    getLatitude(location2), getLongitude(location2), distanceResult);
+
+            // increment total distance
+            distance += distanceResult[0];
+        }
+
+        return distance;
+    }
 }

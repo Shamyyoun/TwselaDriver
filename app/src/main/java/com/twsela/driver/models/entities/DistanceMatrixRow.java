@@ -7,7 +7,7 @@ import java.util.List;
  * Created by Shamyyoun on 16/01/2017.
  */
 public class DistanceMatrixRow {
-    public List<DistanceMatrixElement> elements = new ArrayList<>();
+    private List<DistanceMatrixElement> elements = new ArrayList<>();
 
     public List<DistanceMatrixElement> getElements() {
         return elements;

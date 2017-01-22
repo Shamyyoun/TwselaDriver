@@ -101,7 +101,7 @@ public abstract class ParentRecyclerAdapter<Item> extends RecyclerView.Adapter<P
     }
 
     public boolean hasInternetConnection() {
-        return Utils.hasConnection(context);
+        return Utils.hasInternetConnection(context);
     }
 
     public void printStackTrace(Exception e) {

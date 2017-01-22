@@ -5,6 +5,7 @@ import android.content.Context;
 import com.twsela.driver.connection.ConnectionHandler;
 import com.twsela.driver.connection.ConnectionListener;
 import com.twsela.driver.models.bodies.TripActionBody;
+import com.twsela.driver.models.bodies.UpdateLocationBody;
 import com.twsela.driver.models.entities.Driver;
 import com.twsela.driver.models.entities.MongoLocation;
 import com.twsela.driver.models.responses.DirectionsResponse;
@@ -69,7 +70,8 @@ public class ApiRequests {
     }
 
     public static ConnectionHandler<ServerResponse> updateLocation(Context context, ConnectionListener<ServerResponse> listener,
-                                                                   String id, double lat, double lng, float bearing) {
+                                                                   String id, double lat, double lng,
+                                                                   float bearing, String tripId) {
 
         // prepare url
         String url = AppUtils.getDriverApiUrl(Const.ROUTE_UPDATE_LOCATION);
@@ -79,7 +81,7 @@ public class ApiRequests {
                 ServerResponse.class, listener, Const.ROUTE_UPDATE_LOCATION);
 
         // create and set the body
-        Driver body = new Driver();
+        UpdateLocationBody body = new UpdateLocationBody();
         body.setId(id);
         MongoLocation location = new MongoLocation();
         List<Double> coordinates = new ArrayList<>(2);
@@ -88,6 +90,7 @@ public class ApiRequests {
         location.setCoordinates(coordinates);
         body.setLocation(location);
         body.setBearing("" + bearing);
+        body.setTripId(tripId);
         connectionHandler.setBody(body);
 
         // execute and return
@@ -191,13 +194,12 @@ public class ApiRequests {
 
     public static ConnectionHandler<DistanceMatrixResponse> getDistanceMatrix(Context context,
                                                                               ConnectionListener<DistanceMatrixResponse> listener,
-                                                                              double originLat, double originLng,
-                                                                              double destLat, double destLng,
+                                                                              String origins, String destinations,
                                                                               String apiKey, String language) {
         // prepare url
         String url = String.format(Locale.ENGLISH,
-                "https://maps.googleapis.com/maps/api/distancematrix/json?origins=%f,%f&destinations=%f,%f&language=%s&key=%s",
-                originLat, originLng, destLat, destLng, language, apiKey);
+                "https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&language=%s&key=%s",
+                origins, destinations, language, apiKey);
 
         // create connection handler
         ConnectionHandler<DistanceMatrixResponse> connectionHandler = new ConnectionHandler(context, url,
