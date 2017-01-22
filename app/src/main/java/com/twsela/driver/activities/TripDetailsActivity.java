@@ -162,10 +162,12 @@ public class TripDetailsActivity extends ParentActivity {
         } else if (Const.TAG_DISTANCE_MATRIX.equals(tag)) {
             hideProgressDialog();
 
+            // get distance
             DistanceMatrixResponse distanceMatrixResponse = (DistanceMatrixResponse) response;
             long distanceMeters = distanceMatrixController.getTotalDistance(distanceMatrixResponse);
             float distanceKm = distanceMeters / 1000f;
 
+            // update its ui
             updateDistanceUI(distanceKm);
         }
     }
