@@ -2,7 +2,6 @@ package com.twsela.driver.controllers;
 
 import com.twsela.driver.models.entities.DistanceMatrixRow;
 import com.twsela.driver.models.responses.DistanceMatrixResponse;
-import com.twsela.driver.utils.Utils;
 
 import java.util.List;
 
@@ -20,11 +19,7 @@ public class DistanceMatrixController {
             for (int i = 0; i < rows.size(); i++) {
                 long tempDistance = rows.get(i).getElements().get(i).getDistance().getValue();
                 distance += tempDistance;
-
-                Utils.logE("Distance (" + i + ") = " + tempDistance);
             }
-
-            Utils.logE("Total Distance: " + distance);
 
             return distance;
         } catch (Exception e) {

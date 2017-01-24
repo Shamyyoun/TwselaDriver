@@ -812,7 +812,7 @@ public class Utils {
             return list;
         } else {
             List sampledList = new ArrayList();
-            int step = list.size() / maxLength;
+            int step = (int) Math.ceil((double) list.size() / (double) maxLength);
 
             for (int i = 0; i < list.size(); i += step) {
                 sampledList.add(list.get(i));
