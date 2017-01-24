@@ -85,12 +85,13 @@ public class ConnectionHandler<T> {
         switch (level) {
             case 0:
                 startTime = System.currentTimeMillis();
-                Log.e(LOG_TAG, tag + "request started. time=" + Calendar.getInstance().getTime()
+                logE(tag + "request started. time=" + Calendar.getInstance().getTime()
                         + "\nUrl: " + url);
                 break;
             case 1:
                 finishTime = System.currentTimeMillis();
-                Log.e(LOG_TAG, tag + "request finished and parsing started. time=" + Calendar.getInstance().getTime() + ", Time diff: " + (finishTime - startTime) + " MS");
+                logE(tag + "request finished and parsing started. time=" + Calendar.getInstance().getTime()
+                        + ", Time diff: " + (finishTime - startTime) + " MS");
                 break;
 
         }

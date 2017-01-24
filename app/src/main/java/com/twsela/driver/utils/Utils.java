@@ -41,6 +41,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -803,6 +804,21 @@ public class Utils {
             Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                     Uri.parse("http://maps.google.com/maps?daddr=" + lat + "," + lng));
             context.startActivity(intent);
+        }
+    }
+
+    public static List sampleList(List list, int maxLength) {
+        if (list.size() <= maxLength) {
+            return list;
+        } else {
+            List sampledList = new ArrayList();
+            int step = list.size() / maxLength;
+
+            for (int i = 0; i < list.size(); i += step) {
+                sampledList.add(list.get(i));
+            }
+
+            return sampledList;
         }
     }
 }

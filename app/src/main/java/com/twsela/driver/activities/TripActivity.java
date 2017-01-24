@@ -6,6 +6,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -137,6 +138,9 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
 
         // create the trip details handler
         tripDetailsHandler = new Handler();
+
+        // make the activity stay waked up
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
@@ -144,6 +148,7 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
         // customize map
         this.map = googleMap;
         map.getUiSettings().setMapToolbarEnabled(false);
+        map.getUiSettings().setCompassEnabled(false);
     }
 
     private void updateTripStatusUI() {
