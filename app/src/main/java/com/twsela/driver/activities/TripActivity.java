@@ -18,6 +18,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -397,6 +398,12 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                         .position(latLng)
                         .rotation(bearing)
                         .icon(icon);
+
+                // set the marker flat if it is the driver
+                if (markerSign == MARKER_SIGN_DRIVER) {
+                    options.flat(true);
+                }
+
                 marker = map.addMarker(options);
             } else {
                 // animate to the new position
@@ -406,6 +413,14 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
 
             // save the marker in the array
             markers[markerSign] = marker;
+
+            // check if it is the driver marker
+            if (markerSign == MARKER_SIGN_DRIVER) {
+                // rotate the map
+                CameraPosition pos = CameraPosition.builder().target(latLng)
+                        .bearing(bearing).zoom(map.getCameraPosition().zoom).build();
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(pos));
+            }
         } catch (Exception e) {
             printStackTrace(e);
         }
