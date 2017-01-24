@@ -44,8 +44,7 @@ public class TripDetailsActivity extends ParentActivity {
         setContentView(R.layout.activity_trip_details);
 
         // obtain main objects
-//        tripId = getIntent().getStringExtra(Const.KEY_ID);
-        tripId = "588640a2904b0b7ac23cf0b9";
+        tripId = getIntent().getStringExtra(Const.KEY_ID);
         tripController = new TripController();
         locationController = new LocationController();
         distanceMatrixController = new DistanceMatrixController();

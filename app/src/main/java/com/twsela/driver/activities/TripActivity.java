@@ -741,7 +741,6 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                 destinations += lat2 + "," + lng2;
             }
 
-
         } else {
             // prepare using pickup and actual destination points
             double originLat = locationController.getLatitude(trip.getPickupLocation());
