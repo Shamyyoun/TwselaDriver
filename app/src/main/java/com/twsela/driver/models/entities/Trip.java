@@ -1,6 +1,8 @@
 
 package com.twsela.driver.models.entities;
 
+import android.location.Location;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -53,6 +55,10 @@ public class Trip {
     @SerializedName("route_points")
     @Expose
     private List<MongoLocation> routePoints = null;
+    @SerializedName("total_distance_km")
+    @Expose
+    private float totalDistanceKm;
+    private Location lastFetchedLocation;
 
     public String getPassengerId() {
         return passengerId;
@@ -172,5 +178,21 @@ public class Trip {
 
     public void setRoutePoints(List<MongoLocation> routePoints) {
         this.routePoints = routePoints;
+    }
+
+    public Location getLastFetchedLocation() {
+        return lastFetchedLocation;
+    }
+
+    public void setLastFetchedLocation(Location lastFetchedLocation) {
+        this.lastFetchedLocation = lastFetchedLocation;
+    }
+
+    public float getTotalDistanceKm() {
+        return totalDistanceKm;
+    }
+
+    public void setTotalDistanceKm(float totalDistanceKm) {
+        this.totalDistanceKm = totalDistanceKm;
     }
 }

@@ -15,6 +15,8 @@ public class Const {
     public static final int LOCATION_REFRESH_RATE = 6 * 1000; // in milliseconds
     public static final int MAP_REFRESH_RATE = 6 * 1000; // in milliseconds
     public static final int GOOGLE_MAX_ORIGINS = 10; // for google distanceMatrix api
+    public static final int DISTANCE_LISTENER_MIN_TIME = 1 * 1000;
+    public static final int DISTANCE_LISTENER_MIN_DISTANCE = 0;
 
     // Server Constants:--------------------
     public static final int SER_CODE_200 = 200;

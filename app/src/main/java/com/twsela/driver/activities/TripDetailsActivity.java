@@ -8,19 +8,14 @@ import android.widget.TextView;
 import com.twsela.driver.ApiRequests;
 import com.twsela.driver.Const;
 import com.twsela.driver.R;
-import com.twsela.driver.TwselaApp;
 import com.twsela.driver.connection.ConnectionHandler;
 import com.twsela.driver.controllers.DistanceMatrixController;
 import com.twsela.driver.controllers.LocationController;
 import com.twsela.driver.controllers.TripController;
-import com.twsela.driver.models.entities.MongoLocation;
 import com.twsela.driver.models.entities.Trip;
-import com.twsela.driver.models.responses.DistanceMatrixResponse;
 import com.twsela.driver.models.responses.TripResponse;
 import com.twsela.driver.utils.AppUtils;
 import com.twsela.driver.utils.Utils;
-
-import java.util.List;
 
 public class TripDetailsActivity extends ParentActivity {
     private String tripId;
@@ -106,6 +101,9 @@ public class TripDetailsActivity extends ParentActivity {
             tvDestinationAddress.setText(R.string.not_available);
         }
 
+        // set distance
+        tvDistance.setText(trip.getTotalDistanceKm() + " " + getString(R.string.km));
+
         // set duration
         String duration = tripController.getDuration(this, trip);
         if (duration != null) {
@@ -115,12 +113,8 @@ public class TripDetailsActivity extends ParentActivity {
         }
 
         // set fare
-        String costStr = Utils.formatDouble(trip.getCost()) + " " + getString(R.string.currency);
+        String costStr = Utils.formatDouble1(trip.getCost()) + " " + getString(R.string.currency);
         tvFare.setText(costStr);
-    }
-
-    private void updateDistanceUI(float distanceKm) {
-        tvDistance.setText(distanceKm + " " + getString(R.string.km));
     }
 
     private void preLoadTripDetails() {
@@ -141,85 +135,18 @@ public class TripDetailsActivity extends ParentActivity {
 
     @Override
     public void onSuccess(Object response, int statusCode, String tag) {
+        hideProgressDialog();
 
-        // check tag
-        if (Const.ROUTE_GET_DETAILS_BY_ID.equals(tag)) {
-            // trip details request
-            // check response
-            TripResponse tripResponse = (TripResponse) response;
-            if (tripResponse.isSuccess() && tripResponse.getContent() != null) {
-                // update the ui
-                this.trip = tripResponse.getContent();
-                updateUI();
-
-                // load distance matrix
-                loadDistanceMatrix();
-            } else {
-                // show msg
-                String msg = AppUtils.getResponseMsg(this, tripResponse, R.string.failed_loading_details);
-                Utils.showShortToast(this, msg);
-            }
-        } else if (Const.TAG_DISTANCE_MATRIX.equals(tag)) {
-            hideProgressDialog();
-
-            // get distance
-            DistanceMatrixResponse distanceMatrixResponse = (DistanceMatrixResponse) response;
-            long distanceMeters = distanceMatrixController.getTotalDistance(distanceMatrixResponse);
-            float distanceKm = distanceMeters / 1000f;
-
-            // update its ui
-            updateDistanceUI(distanceKm);
-        }
-    }
-
-    private void loadDistanceMatrix() {
-        // prepare origins and destinations params
-        String origins = "";
-        String destinations = "";
-
-        // check route points
-        List<MongoLocation> points = trip.getRoutePoints();
-        if (points != null && points.size() > 1) {
-
-            // sample the route points list
-            List<MongoLocation> sampledRoutePoints = Utils.sampleList(trip.getRoutePoints(), Const.GOOGLE_MAX_ORIGINS);
-
-            // prepare using points list
-            for (int i = 0; i < sampledRoutePoints.size() - 1; i++) {
-                // get locations
-                MongoLocation location1 = sampledRoutePoints.get(i);
-                MongoLocation location2 = sampledRoutePoints.get(i + 1);
-
-                // get values
-                double lat1 = locationController.getLatitude(location1);
-                double lng1 = locationController.getLongitude(location1);
-                double lat2 = locationController.getLatitude(location2);
-                double lng2 = locationController.getLongitude(location2);
-
-                if (i != 0) {
-                    origins += "|";
-                    destinations += "|";
-                }
-
-                origins += lat1 + "," + lng1;
-                destinations += lat2 + "," + lng2;
-            }
+        // check response
+        TripResponse tripResponse = (TripResponse) response;
+        if (tripResponse.isSuccess() && tripResponse.getContent() != null) {
+            // update the ui
+            this.trip = tripResponse.getContent();
+            updateUI();
         } else {
-            // prepare using pickup and actual destination points
-            double originLat = locationController.getLatitude(trip.getPickupLocation());
-            double originLng = locationController.getLongitude(trip.getPickupLocation());
-            double destLat = locationController.getLatitude(trip.getActualDestinationLocation());
-            double destLng = locationController.getLongitude(trip.getActualDestinationLocation());
-
-            origins = originLat + "," + originLng;
-            destinations = destLat + "," + destLng;
+            // show msg
+            String msg = AppUtils.getResponseMsg(this, tripResponse, R.string.failed_loading_details);
+            Utils.showShortToast(this, msg);
         }
-
-        String apiKey = getString(R.string.google_api_server_key);
-        String language = TwselaApp.getLanguage(this);
-
-        // send the request
-        ConnectionHandler connectionHandler = ApiRequests.getDistanceMatrix(this, this, origins, destinations, apiKey, language);
-        cancelWhenDestroyed(connectionHandler);
     }
 }

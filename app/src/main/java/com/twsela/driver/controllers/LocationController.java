@@ -74,4 +74,17 @@ public class LocationController {
 
         return distance;
     }
+
+    public float calculateDistance(Location location1, Location location2) {
+        try {
+            float[] results = new float[1];
+            Location.distanceBetween(
+                    location1.getLatitude(), location1.getLongitude(),
+                    location2.getLatitude(), location2.getLongitude(), results);
+
+            return results[0];
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 }

@@ -1,8 +1,13 @@
 package com.twsela.driver.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -32,14 +37,12 @@ import com.twsela.driver.TwselaApp;
 import com.twsela.driver.connection.ConnectionHandler;
 import com.twsela.driver.controllers.ActiveUserController;
 import com.twsela.driver.controllers.DirectionsController;
-import com.twsela.driver.controllers.DistanceMatrixController;
 import com.twsela.driver.controllers.LocationController;
 import com.twsela.driver.controllers.TripController;
 import com.twsela.driver.models.entities.MongoLocation;
 import com.twsela.driver.models.entities.Trip;
 import com.twsela.driver.models.enums.TripStatus;
 import com.twsela.driver.models.responses.DirectionsResponse;
-import com.twsela.driver.models.responses.DistanceMatrixResponse;
 import com.twsela.driver.models.responses.ServerResponse;
 import com.twsela.driver.models.responses.TripResponse;
 import com.twsela.driver.utils.AppUtils;
@@ -49,7 +52,7 @@ import com.twsela.driver.utils.Utils;
 
 import java.util.List;
 
-public class TripActivity extends ParentActivity implements OnMapReadyCallback, Runnable {
+public class TripActivity extends ParentActivity implements OnMapReadyCallback, Runnable, LocationListener {
     private static final int MAP_PADDING = 300;
     private static final int MARKER_SIGN_DRIVER = 0;
     private static final int MARKER_SIGN_PICKUP = 1;
@@ -61,12 +64,14 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     private LocationController locationController;
     private ActiveUserController activeUserController;
     private DirectionsController directionsController;
-    private DistanceMatrixController distanceMatrixController;
+    private LocationManager locationManager;
 
     private SupportMapFragment mapFragment;
     private GoogleMap map;
     private TextView tvTripStatus;
     private TextView tvPassengerName;
+    private View layoutDistance;
+    private TextView tvDistance;
     private Button btnMainAction;
     private Button btnCancel;
     private View layoutNavigation;
@@ -78,7 +83,8 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     private Marker[] markers;
     private boolean firstTripDetailsReq = true;
     private Polyline pathPolyline;
-    private Location actualDestinationLocation;
+    private Location lastLocation;
+    private float totalDistanceInKm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,13 +98,15 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
         locationController = new LocationController();
         activeUserController = new ActiveUserController(this);
         directionsController = new DirectionsController();
-        distanceMatrixController = new DistanceMatrixController();
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         markers = new Marker[3];
 
         // init views
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
         tvTripStatus = (TextView) findViewById(R.id.tv_trip_status);
         tvPassengerName = (TextView) findViewById(R.id.tv_passenger_name);
+        layoutDistance = findViewById(R.id.layout_distance);
+        tvDistance = (TextView) findViewById(R.id.tv_distance);
         btnMainAction = (Button) findViewById(R.id.btn_main_action);
         btnCancel = (Button) findViewById(R.id.btn_cancel);
         layoutNavigation = findViewById(R.id.layout_navigation);
@@ -142,6 +150,13 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
 
         // make the activity stay waked up
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // load distance and last location from active trip if exists
+        Trip activeTrip = activeUserController.getActiveTrip();
+        if (activeTrip != null) {
+            totalDistanceInKm = activeTrip.getTotalDistanceKm();
+            lastLocation = activeTrip.getLastFetchedLocation();
+        }
     }
 
     @Override
@@ -233,6 +248,11 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                         loadPickupDirections();
                     } else if (TripStatus.STARTED.getValue().equals(tripStatus)) {
                         loadDestinationDirections();
+
+                        // start location listener and update distance ui
+                        startLocationListener();
+                        showDistanceLayout();
+                        updateDistanceUI();
                     }
                 }
             }
@@ -302,6 +322,13 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
                 // set navigation address and load the path
                 setNavigationAddress();
                 loadDestinationDirections();
+
+                // update distance ui
+                updateDistanceUI();
+                showDistanceLayout();
+
+                // start location listener
+                startLocationListener();
             } else {
                 // show msg
                 String msg = AppUtils.getResponseMsg(this, serverResponse, R.string.failed_starting_trip);
@@ -334,15 +361,6 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
             if (points != null) {
                 drawPath(points);
             }
-        } else if (Const.TAG_DISTANCE_MATRIX.equals(tag)) {
-            // get distance
-            DistanceMatrixResponse distanceMatrixResponse = (DistanceMatrixResponse) response;
-            long distanceMeters = distanceMatrixController.getTotalDistance(distanceMatrixResponse);
-            float distanceKm = distanceMeters / 1000f;
-
-            // send end trip request
-            showProgressDialog();
-            endTrip(distanceKm);
         }
     }
 
@@ -463,6 +481,20 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
 
         // stop trip details handler
         tripDetailsHandler.removeCallbacks(this);
+
+        // stop location listener
+        if (isLocationPermGranted()) {
+            locationManager.removeUpdates(this);
+        }
+
+        // update active trip if exists
+        Trip trip = activeUserController.getActiveTrip();
+        if (trip != null) {
+            trip.setTotalDistanceKm(totalDistanceInKm);
+            trip.setLastFetchedLocation(lastLocation);
+            activeUserController.getUser().setActiveTrip(trip);
+            activeUserController.save();
+        }
     }
 
     @Override
@@ -551,35 +583,27 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
     }
 
     private void preEndTrip() {
-        // prepare actual destination
-        actualDestinationLocation = LocationUtils.getLastKnownLocation(this);
-        if (actualDestinationLocation == null) {
-            // show msg and exit
-            Utils.showShortToast(this, R.string.couldnt_get_your_current_location);
-            return;
-        }
-
         // check internet connection
         if (hasInternetConnection()) {
             showProgressDialog();
-            // load distance first
-            loadDistanceMatrix();
+            endTrip();
         } else {
             Utils.showShortToast(this, R.string.no_internet_connection);
         }
     }
 
-    private void endTrip(float distance) {
+    private void endTrip() {
         // prepare params
         String driverId = activeUserController.getUser().getId();
         String carId = activeUserController.getCarId();
-        double lat = actualDestinationLocation.getLatitude();
-        double lng = actualDestinationLocation.getLongitude();
+        double lat = lastLocation != null ? lastLocation.getLatitude() : 0;
+        double lng = lastLocation != null ? lastLocation.getLongitude() : 0;
         String address = LocationUtils.getAddress(this, lat, lng);
+        float distanceInKm = Utils.convertToFloat(Utils.formatDouble2(totalDistanceInKm));
 
         // send the request
         ConnectionHandler connectionHandler = ApiRequests.endTrip(this, this, driverId, carId,
-                id, lat, lng, address, distance);
+                id, lat, lng, address, distanceInKm);
         cancelWhenDestroyed(connectionHandler);
     }
 
@@ -727,52 +751,55 @@ public class TripActivity extends ParentActivity implements OnMapReadyCallback, 
         }
     }
 
-    private void loadDistanceMatrix() {
-        // prepare origins and destinations params
-        String origins = "";
-        String destinations = "";
+    @Override
+    public void onLocationChanged(Location location) {
+        // increment distance
+        float newDistance = locationController.calculateDistance(lastLocation, location);
+        newDistance /= 1000;
+        totalDistanceInKm += newDistance;
+        updateDistanceUI();
+        lastLocation = location;
+    }
 
-        // check route points
-        List<MongoLocation> points = trip.getRoutePoints();
-        if (points != null && points.size() > 1) {
-            // prepare using points list
-            for (int i = 0; i < points.size() - 1; i++) {
-                // get locations
-                MongoLocation location1 = points.get(i);
-                MongoLocation location2 = points.get(i + 1);
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+    }
 
-                // get values
-                double lat1 = locationController.getLatitude(location1);
-                double lng1 = locationController.getLongitude(location1);
-                double lat2 = locationController.getLatitude(location2);
-                double lng2 = locationController.getLongitude(location2);
+    @Override
+    public void onProviderEnabled(String s) {
+    }
 
-                if (i != 0) {
-                    origins += "|";
-                    destinations += "|";
-                }
+    @Override
+    public void onProviderDisabled(String s) {
+    }
 
-                origins += lat1 + "," + lng1;
-                destinations += lat2 + "," + lng2;
-            }
+    private boolean isLocationPermGranted() {
+        return checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+    }
 
-        } else {
-            // prepare using pickup and actual destination points
-            double originLat = locationController.getLatitude(trip.getPickupLocation());
-            double originLng = locationController.getLongitude(trip.getPickupLocation());
-            double destLat = actualDestinationLocation.getLatitude();
-            double destLng = actualDestinationLocation.getLongitude();
+    private String getBestLocationProvider() {
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        String provider = locationManager.getBestProvider(criteria, true);
+        return provider;
+    }
 
-            origins = originLat + "," + originLng;
-            destinations = destLat + "," + destLng;
+    private void showDistanceLayout() {
+        layoutDistance.setVisibility(View.VISIBLE);
+    }
+
+    private void updateDistanceUI() {
+        String distanceStr = Utils.formatDouble2(totalDistanceInKm) + " " + getString(R.string.km);
+        tvDistance.setText(distanceStr);
+    }
+
+    private void startLocationListener() {
+        // start location listener to calc distance
+        if (isLocationPermGranted()) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    Const.DISTANCE_LISTENER_MIN_TIME, Const.DISTANCE_LISTENER_MIN_DISTANCE, this);
+            lastLocation = locationManager.getLastKnownLocation(getBestLocationProvider());
         }
-
-
-        String apiKey = getString(R.string.google_api_server_key);
-        String language = TwselaApp.getLanguage(this);
-
-        // send the request
-        ConnectionHandler connectionHandler = ApiRequests.getDistanceMatrix(this, this, origins, destinations, apiKey, language);
-        cancelWhenDestroyed(connectionHandler);
     }
 }

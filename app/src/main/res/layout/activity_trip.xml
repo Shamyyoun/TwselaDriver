@@ -60,6 +60,7 @@
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         android:background="@android:color/white"
         android:padding="15dp">
 
@@ -94,6 +95,27 @@
 
             <TextView
                 android:id="@+id/tv_passenger_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="----------------" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/layout_distance"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="@string/distance_c"
+                android:textColor="@color/orange"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="----------------" />

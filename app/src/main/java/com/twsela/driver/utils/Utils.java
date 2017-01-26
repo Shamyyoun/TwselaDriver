@@ -407,11 +407,31 @@ public class Utils {
      * @param number
      * @return the formatted double as string
      */
-    public static String formatDouble(double number) {
+    public static String formatDouble1(double number) {
+        return formatDouble(number, "%.1f");
+    }
+
+    /**
+     * method, used to format a double number as string with maximum 2 number after the point
+     *
+     * @param number
+     * @return the formatted double as string
+     */
+    public static String formatDouble2(double number) {
+        return formatDouble(number, "%.2f");
+    }
+
+    /**
+     * method, used to format a double number as string with passed doubleFormat
+     *
+     * @param number
+     * @return the formatted double as string
+     */
+    private static String formatDouble(double number, String doubleFormat) {
         if (number == (long) number) {
             return String.format("%d", (long) number);
         } else {
-            return String.format("%.1f", number).toString();
+            return String.format(doubleFormat, number).toString();
         }
     }
 
